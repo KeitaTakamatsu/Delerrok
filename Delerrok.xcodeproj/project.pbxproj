@@ -6,8 +6,29 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F3C3A1D816C0D83B0055AA11 /* CloudApp.c in Sources */ = {isa = PBXBuildFile; fileRef = F3C3A1CB16C0D83B0055AA11 /* CloudApp.c */; };
+		F3C3A1D916C0D83B0055AA11 /* CloudApp.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1CC16C0D83B0055AA11 /* CloudApp.h */; };
+		F3C3A1DA16C0D83B0055AA11 /* CORE2.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1CD16C0D83B0055AA11 /* CORE2.h */; };
+		F3C3A1DB16C0D83B0055AA11 /* COREUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3C3A1CE16C0D83B0055AA11 /* COREUtils.cpp */; };
+		F3C3A1DC16C0D83B0055AA11 /* COREUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1CF16C0D83B0055AA11 /* COREUtils.h */; };
+		F3C3A1DD16C0D83B0055AA11 /* FeliCa.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1D716C0D83B0055AA11 /* FeliCa.h */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		F3C3A1C316C0D78C0055AA11 /* libDelerrok.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDelerrok.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3C3A1C316C0D78C0055AA11 /* libCloudApp.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libCloudApp.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3C3A1CB16C0D83B0055AA11 /* CloudApp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CloudApp.c; sourceTree = "<group>"; };
+		F3C3A1CC16C0D83B0055AA11 /* CloudApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudApp.h; sourceTree = "<group>"; };
+		F3C3A1CD16C0D83B0055AA11 /* CORE2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CORE2.h; sourceTree = "<group>"; };
+		F3C3A1CE16C0D83B0055AA11 /* COREUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COREUtils.cpp; sourceTree = "<group>"; };
+		F3C3A1CF16C0D83B0055AA11 /* COREUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COREUtils.h; sourceTree = "<group>"; };
+		F3C3A1D116C0D83B0055AA11 /* DISCOUNT_RULE.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DISCOUNT_RULE.csv; sourceTree = "<group>"; };
+		F3C3A1D216C0D83B0055AA11 /* JOURNEY_PLANNER.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = JOURNEY_PLANNER.csv; sourceTree = "<group>"; };
+		F3C3A1D316C0D83B0055AA11 /* JP_STATION.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = JP_STATION.csv; sourceTree = "<group>"; };
+		F3C3A1D416C0D83B0055AA11 /* PASS.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASS.csv; sourceTree = "<group>"; };
+		F3C3A1D516C0D83B0055AA11 /* PASS2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASS2.csv; sourceTree = "<group>"; };
+		F3C3A1D616C0D83B0055AA11 /* PASS_STATION.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASS_STATION.csv; sourceTree = "<group>"; };
+		F3C3A1D716C0D83B0055AA11 /* FeliCa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeliCa.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,6 +45,8 @@
 		F3C3A1B816C0D78C0055AA11 = {
 			isa = PBXGroup;
 			children = (
+				F3C3A1DE16C0DC520055AA11 /* FareCollection */,
+				F3C3A1CA16C0D83B0055AA11 /* CloudApp */,
 				F3C3A1C416C0D78C0055AA11 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -31,9 +54,43 @@
 		F3C3A1C416C0D78C0055AA11 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F3C3A1C316C0D78C0055AA11 /* libDelerrok.dylib */,
+				F3C3A1C316C0D78C0055AA11 /* libCloudApp.dylib */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F3C3A1CA16C0D83B0055AA11 /* CloudApp */ = {
+			isa = PBXGroup;
+			children = (
+				F3C3A1CB16C0D83B0055AA11 /* CloudApp.c */,
+				F3C3A1CC16C0D83B0055AA11 /* CloudApp.h */,
+				F3C3A1CD16C0D83B0055AA11 /* CORE2.h */,
+				F3C3A1CE16C0D83B0055AA11 /* COREUtils.cpp */,
+				F3C3A1CF16C0D83B0055AA11 /* COREUtils.h */,
+				F3C3A1D016C0D83B0055AA11 /* csv */,
+				F3C3A1D716C0D83B0055AA11 /* FeliCa.h */,
+			);
+			path = CloudApp;
+			sourceTree = "<group>";
+		};
+		F3C3A1D016C0D83B0055AA11 /* csv */ = {
+			isa = PBXGroup;
+			children = (
+				F3C3A1D116C0D83B0055AA11 /* DISCOUNT_RULE.csv */,
+				F3C3A1D216C0D83B0055AA11 /* JOURNEY_PLANNER.csv */,
+				F3C3A1D316C0D83B0055AA11 /* JP_STATION.csv */,
+				F3C3A1D416C0D83B0055AA11 /* PASS.csv */,
+				F3C3A1D516C0D83B0055AA11 /* PASS2.csv */,
+				F3C3A1D616C0D83B0055AA11 /* PASS_STATION.csv */,
+			);
+			path = csv;
+			sourceTree = "<group>";
+		};
+		F3C3A1DE16C0DC520055AA11 /* FareCollection */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = FareCollection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -43,6 +100,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3C3A1D916C0D83B0055AA11 /* CloudApp.h in Headers */,
+				F3C3A1DA16C0D83B0055AA11 /* CORE2.h in Headers */,
+				F3C3A1DC16C0D83B0055AA11 /* COREUtils.h in Headers */,
+				F3C3A1DD16C0D83B0055AA11 /* FeliCa.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,7 +124,7 @@
 			);
 			name = Delerrok;
 			productName = Delerrok;
-			productReference = F3C3A1C316C0D78C0055AA11 /* libDelerrok.dylib */;
+			productReference = F3C3A1C316C0D78C0055AA11 /* libCloudApp.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -97,6 +158,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3C3A1D816C0D83B0055AA11 /* CloudApp.c in Sources */,
+				F3C3A1DB16C0D83B0055AA11 /* COREUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,7 +221,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = CloudApp;
 			};
 			name = Debug;
 		};
@@ -166,7 +233,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = CloudApp;
 			};
 			name = Release;
 		};
