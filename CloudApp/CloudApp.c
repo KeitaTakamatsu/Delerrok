@@ -12,6 +12,9 @@
 #include "COREUtils.h"
 #include "CloudApp.h"
 #include "FeliCa.h"
+#include "structures.h"
+#include "defines.h"
+
 
 #define TYPE_CARD 0x0000
 #define TYPE_APP  0x0001

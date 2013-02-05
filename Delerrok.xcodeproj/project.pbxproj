@@ -13,6 +13,8 @@
 		F3C3A1DB16C0D83B0055AA11 /* COREUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3C3A1CE16C0D83B0055AA11 /* COREUtils.cpp */; };
 		F3C3A1DC16C0D83B0055AA11 /* COREUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1CF16C0D83B0055AA11 /* COREUtils.h */; };
 		F3C3A1DD16C0D83B0055AA11 /* FeliCa.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1D716C0D83B0055AA11 /* FeliCa.h */; };
+		F3C3A1E016C0E1820055AA11 /* structures.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1DF16C0E1820055AA11 /* structures.h */; };
+		F3C3A1E316C0E22A0055AA11 /* defines.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1E216C0E22A0055AA11 /* defines.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		F3C3A1D516C0D83B0055AA11 /* PASS2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASS2.csv; sourceTree = "<group>"; };
 		F3C3A1D616C0D83B0055AA11 /* PASS_STATION.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASS_STATION.csv; sourceTree = "<group>"; };
 		F3C3A1D716C0D83B0055AA11 /* FeliCa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeliCa.h; sourceTree = "<group>"; };
+		F3C3A1DF16C0E1820055AA11 /* structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = structures.h; sourceTree = "<group>"; };
+		F3C3A1E216C0E22A0055AA11 /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,8 @@
 		F3C3A1DE16C0DC520055AA11 /* FareCollection */ = {
 			isa = PBXGroup;
 			children = (
+				F3C3A1DF16C0E1820055AA11 /* structures.h */,
+				F3C3A1E216C0E22A0055AA11 /* defines.h */,
 			);
 			name = FareCollection;
 			sourceTree = "<group>";
@@ -104,6 +110,8 @@
 				F3C3A1DA16C0D83B0055AA11 /* CORE2.h in Headers */,
 				F3C3A1DC16C0D83B0055AA11 /* COREUtils.h in Headers */,
 				F3C3A1DD16C0D83B0055AA11 /* FeliCa.h in Headers */,
+				F3C3A1E016C0E1820055AA11 /* structures.h in Headers */,
+				F3C3A1E316C0E22A0055AA11 /* defines.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
