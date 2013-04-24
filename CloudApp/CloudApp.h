@@ -10,10 +10,16 @@
 #define CloudApp_CloudApp_h
 
 enum TestCloudAppTaskID {
-  Echo            = 0x0000,
-  EchoWithTimeout = 0x0001,
-  Increment       = 0x0002
+    Echo            = 0x0000,
+    EchoWithTimeout = 0x0001,
+    Increment       = 0x0002,
+    Transit         = 0x0003,
+    SDBEditor       = 0x0004,
+    TaskTest        = 0x0005,
+    
 };
+
+
 
 
 #endif

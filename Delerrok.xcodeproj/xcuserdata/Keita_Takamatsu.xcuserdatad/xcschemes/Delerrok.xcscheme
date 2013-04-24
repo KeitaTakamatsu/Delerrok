@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F3C3A1C216C0D78C0055AA11"
-               BuildableName = "libDelerrok.dylib"
+               BuildableName = "libCloudApp.dylib"
                BlueprintName = "Delerrok"
                ReferencedContainer = "container:Delerrok.xcodeproj">
             </BuildableReference>
@@ -40,7 +40,7 @@
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <PathRunnable
-         FilePath = "/Users/Keita_Takamatsu/core-repo/20120730-core2api/contrib/Simulator/CORE2">
+         FilePath = "/Users/Keita_Takamatsu/Downloads/back/CORE2/CORE2/CORE2">
       </PathRunnable>
       <CommandLineArguments>
          <CommandLineArgument
