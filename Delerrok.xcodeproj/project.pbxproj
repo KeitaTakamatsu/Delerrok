@@ -13,6 +13,8 @@
 		F312659416DE9A0100FEB2DE /* StoredValue.h in Headers */ = {isa = PBXBuildFile; fileRef = F312659316DE9A0100FEB2DE /* StoredValue.h */; };
 		F312659616DE9D7F00FEB2DE /* Util.c in Sources */ = {isa = PBXBuildFile; fileRef = F312659516DE9D7F00FEB2DE /* Util.c */; };
 		F312659816DE9D8B00FEB2DE /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = F312659716DE9D8B00FEB2DE /* Util.h */; };
+		F31FDE0F1745C22600FD6175 /* udp.c in Sources */ = {isa = PBXBuildFile; fileRef = F31FDE0D1745C22600FD6175 /* udp.c */; };
+		F31FDE101745C22600FD6175 /* udp.h in Headers */ = {isa = PBXBuildFile; fileRef = F31FDE0E1745C22600FD6175 /* udp.h */; };
 		F33BFE7D16E930FE006B7586 /* Transfer.c in Sources */ = {isa = PBXBuildFile; fileRef = F33BFE7C16E930FE006B7586 /* Transfer.c */; };
 		F356004716DC0B6B00030B00 /* TransitApp.c in Sources */ = {isa = PBXBuildFile; fileRef = F356004616DC0B6B00030B00 /* TransitApp.c */; };
 		F356004B16DC1C3100030B00 /* Account.c in Sources */ = {isa = PBXBuildFile; fileRef = F356004A16DC1C3100030B00 /* Account.c */; };
@@ -39,6 +41,8 @@
 		F312659316DE9A0100FEB2DE /* StoredValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoredValue.h; sourceTree = "<group>"; };
 		F312659516DE9D7F00FEB2DE /* Util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Util.c; sourceTree = "<group>"; };
 		F312659716DE9D8B00FEB2DE /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		F31FDE0D1745C22600FD6175 /* udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = udp.c; sourceTree = "<group>"; };
+		F31FDE0E1745C22600FD6175 /* udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = udp.h; sourceTree = "<group>"; };
 		F33BFE7C16E930FE006B7586 /* Transfer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Transfer.c; sourceTree = "<group>"; };
 		F33BFE7F16E93107006B7586 /* Transfer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Transfer.h; sourceTree = "<group>"; };
 		F356004616DC0B6B00030B00 /* TransitApp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = TransitApp.c; path = CloudApp/TransitApp.c; sourceTree = "<group>"; };
@@ -76,6 +80,8 @@
 		F312659016DE99BC00FEB2DE /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				F31FDE0D1745C22600FD6175 /* udp.c */,
+				F31FDE0E1745C22600FD6175 /* udp.h */,
 				F312659516DE9D7F00FEB2DE /* Util.c */,
 				F312659716DE9D8B00FEB2DE /* Util.h */,
 				F30ED1A5171F67D3004F9EC5 /* md5.c */,
@@ -164,6 +170,7 @@
 				F312659416DE9A0100FEB2DE /* StoredValue.h in Headers */,
 				F312659816DE9D8B00FEB2DE /* Util.h in Headers */,
 				F3E6F09516DEF6BB00827639 /* HistoryData.h in Headers */,
+				F31FDE101745C22600FD6175 /* udp.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +237,7 @@
 				F33BFE7D16E930FE006B7586 /* Transfer.c in Sources */,
 				F3F4F2FA16E978AA002C9B0A /* Station.c in Sources */,
 				F30ED1A6171F67D3004F9EC5 /* md5.c in Sources */,
+				F31FDE0F1745C22600FD6175 /* udp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

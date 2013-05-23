@@ -176,7 +176,7 @@ void dump_txn(txn_t* txn)
     
     printf("CardID=");
     for(i = 0; i < 8; i++)
-        printf("%02d", txn->cardID[i]);
+        printf("%2d ", txn->cardID[i]);
     printf("\n");
     
     printf("CardType=%d\n", txn->cardType);

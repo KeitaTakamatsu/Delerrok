@@ -28,6 +28,8 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
     if(!policy->storedValueEnabled)
         return makeResponse(0, 0, 0, 0, account->specialFareProgram, NULL, 0, account->balance);
     
+    memcpy(&newTransferData, &account->transferData, sizeof(transferData_t));
+    
     int transferResult = checkTransferFlat(txn, agency, route, account, station, txn->timestamp, &newTransferData);
     long long flatFareID = makeFlatFareID(station->zone.zoneID, account->specialFareProgram, transferResult, 0);
     fare_t fare;
@@ -58,6 +60,7 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
     }
 }
 
+
 u_int8 flatFareID[SIZE_OF_ZONE_ID+3];
 long long makeFlatFareID(u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8 peaktimeCode)
 {
@@ -68,6 +71,7 @@ long long makeFlatFareID(u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8
     flatFareID[idx] = peaktimeCode; idx++;
     return md5(flatFareID, SIZE_OF_ZONE_ID+3);
 }
+
 
 long long makeFlatFareIDFromFare(fare_t* fare)
 {

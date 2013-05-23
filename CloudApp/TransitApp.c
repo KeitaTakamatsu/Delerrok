@@ -40,6 +40,10 @@ response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
     dump_agency(agency);
     policy = &agency->policy;
     dump_policy(policy);
+    dump_account(account);
+    
+    CALog("CALog Testing....\n%d", 0);
+    
     if(!checkTxnData(txn, policy))
     {
         // Txnデータが有効ではない

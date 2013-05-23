@@ -18,6 +18,7 @@
 #include "Util.h"
 #include "defines.h"
 #include "Station.h"
+#include "udp.h"
 
 #define TYPE_CARD 0x0000
 #define TYPE_APP  0x0001
@@ -164,6 +165,7 @@ CATaskData *taskTest(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
     return taskData;
 }
 
+u_int8 c[128];
 CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
 {
     txn_data = (txn_t*)(taskData->data[0]+4);
@@ -189,8 +191,15 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
     dump_arr("Response", taskData->data[0], 0, sizeof(response_t));
     printf("sizeof(response_t) = %d\n",sizeof(response_t));
     
+    
+    blockcopy(taskData, 0, c, 0, 20);
+    blockcopy(taskData->data[0], 0, c, 20, sizeof(response_t));
+    dump_arr("C=", c, 0, 20 + sizeof(response_t));
+    udp_send_original(c, 20 + sizeof(response_t), "10.0.1.8", 12345);
+    // udp_send_original(taskData->data[0], sizeof(response_t), "10.0.1.8", 12345);
     return taskData;
 }
+
 
 
 u_int8* sdbid_tmp;
