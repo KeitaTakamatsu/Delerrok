@@ -18,6 +18,7 @@
 #include "HistoryData.h"
 #include "StoredValue.h"
 #include "Pass.h"
+#include "Util.h"
 
 farePolicy_t* policy;
 

@@ -29,7 +29,6 @@
 		F3C3A1E316C0E22A0055AA11 /* defines.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C3A1E216C0E22A0055AA11 /* defines.h */; };
 		F3E6F09216DEF6B000827639 /* HistoryData.c in Sources */ = {isa = PBXBuildFile; fileRef = F3E6F09116DEF6B000827639 /* HistoryData.c */; };
 		F3E6F09516DEF6BB00827639 /* HistoryData.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E6F09416DEF6BB00827639 /* HistoryData.h */; };
-		F3F4F2FA16E978AA002C9B0A /* Station.c in Sources */ = {isa = PBXBuildFile; fileRef = F3F4F2F916E978AA002C9B0A /* Station.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,8 +61,6 @@
 		F3C3A1E216C0E22A0055AA11 /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
 		F3E6F09116DEF6B000827639 /* HistoryData.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HistoryData.c; sourceTree = "<group>"; };
 		F3E6F09416DEF6BB00827639 /* HistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryData.h; sourceTree = "<group>"; };
-		F3F4F2F916E978AA002C9B0A /* Station.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Station.c; sourceTree = "<group>"; };
-		F3F4F2FC16E978B1002C9B0A /* Station.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Station.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,8 +105,6 @@
 				F33BFE7F16E93107006B7586 /* Transfer.h */,
 				F312659116DE99E700FEB2DE /* StoredValue.c */,
 				F312659316DE9A0100FEB2DE /* StoredValue.h */,
-				F3F4F2F916E978AA002C9B0A /* Station.c */,
-				F3F4F2FC16E978B1002C9B0A /* Station.h */,
 			);
 			name = TransitApp;
 			sourceTree = "<group>";
@@ -235,7 +230,6 @@
 				F312659616DE9D7F00FEB2DE /* Util.c in Sources */,
 				F3E6F09216DEF6B000827639 /* HistoryData.c in Sources */,
 				F33BFE7D16E930FE006B7586 /* Transfer.c in Sources */,
-				F3F4F2FA16E978AA002C9B0A /* Station.c in Sources */,
 				F30ED1A6171F67D3004F9EC5 /* md5.c in Sources */,
 				F31FDE0F1745C22600FD6175 /* udp.c in Sources */,
 			);

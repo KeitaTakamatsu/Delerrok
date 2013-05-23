@@ -11,7 +11,6 @@
 
 #include "structures.h"
 #include "defines.h"
-#include "Util.h"
 
 int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* farePolicy, u_int8* timestamp, u_int8* expireDate);
 int isCardStatusValid(account_t* account, farePolicy_t* policy);

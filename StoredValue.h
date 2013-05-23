@@ -12,8 +12,6 @@
 #include <stdio.h>
 #include "defines.h"
 #include "structures.h"
-#include "Util.h"
-#include "CloudApp.h"
 
 
 

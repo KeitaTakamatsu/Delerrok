@@ -17,7 +17,6 @@
 #include "StoredValue.h"
 #include "Util.h"
 #include "defines.h"
-#include "Station.h"
 #include "udp.h"
 
 #define TYPE_CARD 0x0000
