@@ -17,12 +17,12 @@ response_t makeResponse(int open, int fare, int messageCode, int errorCode, int 
     res.messageCode = messageCode;
     res.errorCode = errorCode;
     res.sfpCode = sfp;
-    if(passExpireDate != NULL)
+    if(passExpireDate != '\0')
         memcpy(res.passExpireDate, passExpireDate, 4);
     res.numOfTripBasedPass = numOfTripBasedPass;
     res.balance = balance;
     
-    if(passExpireDate == NULL)
+    if(passExpireDate == '\0')
         memcpy(res.passExpireDate, INVALID_DATE, 4);
     else
         memcpy(res.passExpireDate, passExpireDate, 4);

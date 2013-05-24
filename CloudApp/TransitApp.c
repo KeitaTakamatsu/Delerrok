@@ -86,6 +86,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
     
     int sdbresult = SDBAssign(SDB_INDEX_STATION, *((long long*)(&a)));
     SDBRead(SDB_INDEX_STATION, 0, &from, sizeof(station_t));
+    dump_station(&from);
     
     int hasPass, passNumber;
     int passResult = getPass(txn, agency, account, &from, NULL, &hasPass, &passNumber);

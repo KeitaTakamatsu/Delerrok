@@ -159,6 +159,8 @@ double datetimeCompareShort(struct tm time1, struct tm time2)
 void dump_txn(txn_t* txn)
 {
     int i;
+#ifdef DEBUG
+    printf("[Transaction]\n");
     printf("AgencyID=");
     for(i = 0; i < 8; i++)
         printf("%02d", txn->agencyID[i]);
@@ -188,6 +190,7 @@ void dump_txn(txn_t* txn)
     
     printf("North=%d.%d\n", txn->northA, txn->northB);
     printf("East =%d.%d\n", txn->eastA, txn->eastB);
+#endif
 }
 
 
