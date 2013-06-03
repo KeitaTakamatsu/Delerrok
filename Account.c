@@ -14,21 +14,21 @@ int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* fare
 {
     if(!isCardStatusValid(account, farePolicy))
     {
-#ifdef DEBUG
+#ifdef CONSOLE
         printf("[CheckAccount] HIT--001\n");
 #endif
         return 0;
     }
     if(!isCardStatusValid(account, farePolicy))
     {
-#ifdef DEBUG
+#ifdef CONSOLE
         printf("[CheckAccount] HIT--002\n");
         return 0;
 #endif
     }
     if(!compare(account->agencyGroupCode, 0, agencyGroupCode, 0, SIZE_OF_AGENCY_GROUP_CODE))
     {
-#ifdef DEBUG
+#ifdef CONSOLE
         printf("[CheckAccount] HIT--003\n");
 #endif
         return 0;
@@ -39,7 +39,7 @@ int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* fare
     struct tm expire = makeTimeYYYYMMDD(expireDate);
     if(datetimeCompareShort(now, expire) > 0)
     {
-#ifdef DEBUG
+#ifdef CONSOLE
         printf("[CheckAccount] HIT--004\n");
 #endif
         return 0;

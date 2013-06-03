@@ -111,14 +111,14 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
             newtime = getActivatedTimeBasedPass(pass, timestamp);
             if(newtime == NULL)
             {
-#ifdef DEBUG
+#ifdef CONSOLE
                 printf("HIT---PASS---D\n");
 #endif
                 return PASS_RESULT_INVALID;
             }
             else
             {
-#ifdef DEBUG
+#ifdef CONSOLE
                 printf("HIT---PASS---RESULT_NEED_UPDATE_TIME\n");
 #endif
                 expire = *newtime;

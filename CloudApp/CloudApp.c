@@ -61,24 +61,24 @@ void CloudAppInit(void)
     taskTransitHandlerAssignInfo.IDOffset[1] = AGENCY_ID_OFFSET;
     taskTransitHandlerAssignInfo.IDLength[1] = SIZE_OF_AGENCY_ID;
     // Route
-    // taskTransitHandlerAssignInfo.SDBIndex[2] = SDB_INDEX_ROUTE;
-    // taskTransitHandlerAssignInfo.IDOffset[2] = ROUTE_ID_OFFSET;
-    // taskTransitHandlerAssignInfo.IDLength[2] = SIZE_OF_ROUTE_ID;
+    taskTransitHandlerAssignInfo.SDBIndex[2] = SDB_INDEX_ROUTE;
+    taskTransitHandlerAssignInfo.IDOffset[2] = ROUTE_ID_OFFSET;
+    taskTransitHandlerAssignInfo.IDLength[2] = SIZE_OF_ROUTE_ID;
     
     // Incliment
     SDBAssignInfo taskInclimentAssignInfo;
     taskInclimentAssignInfo.numID = 1;
     taskInclimentAssignInfo.SDBIndex[0] = 0;
     taskInclimentAssignInfo.IDOffset[0] = AGENCY_ID_OFFSET;
-    taskInclimentAssignInfo.IDLength[0] = SIZE_OF_AGENCY_ID;
-    
+    taskInclimentAssignInfo.IDLength[0] = SIZE_OF_AGENCY_ID;    
     
     
     ///Register handlers
     //Echo
     CARegisterTaskHandler(Echo, taskEchoHandler, NULL);
     // Transit
-    CARegisterTaskHandler(Transit, taskTransit, &taskTransitHandlerAssignInfo);
+    // CARegisterTaskHandler(Transit, taskTransit, &taskTransitHandlerAssignInfo);
+    CARegisterTaskHandler(Transit, taskTransit, NULL);
     // SDBEditor
     CARegisterTaskHandler(SDBEditor, taskSDBEditor, NULL);
     // TestTask
@@ -167,35 +167,34 @@ CATaskData *taskTest(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
 u_int8 c[128];
 CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
 {
+    CALog("[CCP-IN]");    
     txn_data = (txn_t*)(taskData->data[0]+4);
     dump_txn(txn_data);
     
+    long long l = *((long long*)txn_data->agencyID);    
+    SDBAssign(SDB_INDEX_AGENCY, l);
     SDBRead(SDB_INDEX_AGENCY, 0, agency, sizeof(agency_t));
     dump_agency(agency);
     
+    l = *((long long*)txn_data->cardID);
+    SDBAssign(SDB_INDEX_ACCOUNT, l);
     SDBRead(SDB_INDEX_ACCOUNT, 0, account, sizeof(account_t));
     dump_account(account);
     
-    
-    long long* testlong = malloc(sizeof(long long));
-    memcpy(testlong, txn_data->routeID, 8);    
-    SDBAssign(SDB_INDEX_ROUTE, *testlong);
+    l = *((long long*)txn_data->routeID);
+    SDBAssign(SDB_INDEX_ROUTE, l);
     SDBRead(SDB_INDEX_ROUTE,  0, route, sizeof(route_t));
-    dump_route(route);    
+    dump_route(route);
     
     res_data = app(txn_data, account, agency, route);
     memcpy(taskData->data[0], &res_data, sizeof(response_t));
     
-    dump_responseData(taskData->data[0]);
-    dump_arr("Response", taskData->data[0], 0, sizeof(response_t));
-    printf("sizeof(response_t) = %d\n",sizeof(response_t));
+    
+    int t = 0;
+    // while(t < 100000000){t++;}
     
     
-    blockcopy(taskData, 0, c, 0, 20);
-    blockcopy(taskData->data[0], 0, c, 20, sizeof(response_t));
-    dump_arr("C=", c, 0, 20 + sizeof(response_t));
-    udp_send_original(c, 20 + sizeof(response_t), "10.0.1.8", 12345);
-    // udp_send_original(taskData->data[0], sizeof(response_t), "10.0.1.8", 12345);
+    CALog("[CCP-OUT]");
     return taskData;
 }
 
@@ -220,9 +219,8 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_AGENCY:
         {
             agency_t ag = *((agency_t*) data->data);
-            dump_agency(&ag);
-            
-            SDBAssign(data->sdbindex,  *((long long*)data->sdbID));
+            long long l = *((long long*)data->sdbID);
+            SDBAssign(data->sdbindex, l);
             SDBWrite(data->sdbindex, &ag, 0, sizeof(agency_t));
             SDBRelease(data->sdbindex);
             break;

@@ -129,7 +129,7 @@ double datetimeCompare(struct tm time1, struct tm time2)
     time_t t1  = mktime(&time1);
     time_t t2  = mktime(&time2);
     
-#ifdef DEBUG
+#ifdef CONSOLE
     printf("[DateTimeCompare]\n");
     printf("|*** %ld \n", t1);
     printf("|*** %ld \n", t2);
@@ -145,7 +145,7 @@ double datetimeCompareShort(struct tm time1, struct tm time2)
     time_t t1 = mktime(&time1) / (60*60*24);
     time_t t2 = mktime(&time2) / (60*60*24);
     
-#ifdef DEBUG
+#ifdef CONSOLE
     printf("[DateTimeCompareShort]\n");
     printf("|*** %ld \n", t1);
     printf("|*** %ld \n", t2);
@@ -159,7 +159,7 @@ double datetimeCompareShort(struct tm time1, struct tm time2)
 void dump_txn(txn_t* txn)
 {
     int i;
-#ifdef DEBUG
+#ifdef CONSOLE
     printf("[Transaction]\n");
     printf("AgencyID=");
     for(i = 0; i < 8; i++)
@@ -196,6 +196,7 @@ void dump_txn(txn_t* txn)
 
 void dump_route(route_t* route)
 {
+#ifdef CONSOLE
     printf("[Route]\n");
     dump_arr("RouteID=", route->routeID, 0, SIZE_OF_ROUTE_ID);
     dump_arr("AgencyID=", route->agencyID, 0, SIZE_OF_AGENCY_ID);
@@ -204,26 +205,31 @@ void dump_route(route_t* route)
     printf("Direction=%d\n", route->direction);
     printf("NumOfConnectedRoute=%d\n", route->numOfConnectedRoute);
     printf("NumOfStation=%d\n", route->numOfStation);
+#endif
 }
 
 void dump_tm(struct tm t)
-{
+{    
+#ifdef CONSOLE
     printf("%d/%d/%d %d:%d:%d\n", t.tm_mon, t.tm_mday, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec );
+#endif
 }
 
 void dump_tm_short(struct tm t)
 {
+#ifdef CONSOLE
     printf("%d/%d/%d\n", t.tm_mon, t.tm_mday, t.tm_year);
+#endif
 }
 
 
 
 
 void dump_agency(agency_t* ag)
-{
+{    
+#ifdef CONSOLE
     int i, j;
     printf("[Agency]\n");
-    
     printf("AgencyID=");
     for(i = 0; i < SIZE_OF_AGENCY_ID; i++)
         printf("%02d", ag->agencyID[i]);
@@ -243,10 +249,12 @@ void dump_agency(agency_t* ag)
             printf("%02d", ag->routeIDList[i*SIZE_OF_ROUTE_ID+j]);
         printf("\n");
     }
+#endif    
 }
 
 void dump_policy(farePolicy_t* policy)
 {
+#ifdef CONSOLE
     printf("[FarePlicy]\n");
     printf("FareType=%d\n", policy->fareType);
     printf("PassEnabled=%d\n", policy->passEnabled);
@@ -263,10 +271,12 @@ void dump_policy(farePolicy_t* policy)
     dump_arr("ValidCardStatus=", policy->validCardTypeList, 0, policy->numOfValidCardType);
     printf("NumOfValidAccountStatus=%d\n", policy->numOfAccountStatus);
     dump_arr("ValidAccountStatus=", policy->validAccountStatusList, 0, policy->numOfAccountStatus);
+#endif
 }
 
 void dump_account(account_t* ac)
 {
+#ifdef CONSOLE
     printf("[Account]\n");
     dump_arr("CardID=", ac->cardID, 0, SIZE_OF_CARD_ID);
     dump_arr("AgencyGroupCode=", ac->agencyGroupCode, 0, SIZE_OF_AGENCY_GROUP_CODE);
@@ -274,10 +284,12 @@ void dump_account(account_t* ac)
     printf("CardStatus=%d\n", ac->cardStatus);
     printf("SFP=%d\n", ac->specialFareProgram);
     printf("Balance=%d\n", ac->balance);
+#endif
 }
 
 void dump_pass(pass_t* pass)
 {
+#ifdef CONSOLE
     int i;
     printf("[Pass]\n");
     printf("PassType=%d\n", pass->passType);
@@ -294,11 +306,13 @@ void dump_pass(pass_t* pass)
     for(i = 0; i < pass->numOfValidZoneID; i++)
     {
         dump_arr("     ", pass->validZoneIDList, i*SIZE_OF_ZONE_ID, SIZE_OF_ZONE_ID);
-    }    
+    }
+#endif
 }
 
 void dump_history(history_t* hist)
 {
+#ifdef CONSOLE
     printf("[History]\n");
     printf("HistoryType=%d\n", hist->historyType);
     dump_arr("StationID=", hist->stationID, 0, SIZE_OF_STATION_ID);
@@ -312,21 +326,25 @@ void dump_history(history_t* hist)
     printf("ModeType=%d\n", hist->modeType);
     printf("PaymentType=%d\n", hist->paymentType);
     printf("PassbackCount=%d\n", hist->passbackCount);
+#endif
 }
 
 
 void dump_transferData(transferData_t* td)
 {
+#ifdef CONSOLE
     printf("[Transfer Data]\n");
     dump_arr("StationRouteID=", td->startRouteID, 0, SIZE_OF_ROUTE_ID);
     printf("Timestamp=%02d/%02d/%02d %02d:%02d:%02d\n", td->timestamp[0], td->timestamp[1], td->timestamp[2], td->timestamp[3], td->timestamp[4], td->timestamp[5]);
     printf("StartDirection=%d\n", td->startDirection);
     printf("OriginalRouteType=%d\n", td->originalRouteType);
     printf("TransferCount=%d\n", td->transferCount);
+#endif
 }
 
 void dump_responseData(response_t* res)
 {
+#ifdef CONSOLE
     printf("[Response]\n");
     printf("Open=%02d\n", res->open);
     printf("Fare=%d\n", res->fare);
@@ -336,21 +354,25 @@ void dump_responseData(response_t* res)
     printf("PassExpireDate=%02d%02d/%02d/%02d\n", res->passExpireDate[0],res->passExpireDate[1], res->passExpireDate[2], res->passExpireDate[3]);
     printf("Balance=%d\n", res->balance);
     printf("NumOfTripBasedPass=%02d\n", res->numOfTripBasedPass);
+#endif
 }
 
 void dump_fare(fare_t* fare)
 {
+#ifdef CONSOLE
     printf("[Fare]\n");
     dump_arr("ZoneID=", fare->zoneID, 0, SIZE_OF_ZONE_ID);
     printf("SFP=%d\n", fare->sfp);
     printf("TransferType=%d\n", fare->transferType);
     printf("PeaktimeCode=%d\n", fare->peaktimeCode);
     printf("FareValue=%d\n", fare->fareValue);
+#endif
 }
 
 
 void dump_station(station_t* station)
 {
+#ifdef CONSOLE
     int i;
     printf("[Station]\n");
     dump_arr("StationID=", station->stationID, 0, SIZE_OF_STATION_ID);
@@ -367,16 +389,19 @@ void dump_station(station_t* station)
         dump_arr("     ", station->connectedRoutesList, i*SIZE_OF_ROUTE_ID, SIZE_OF_ROUTE_ID);
     printf("North=%d.%d\n", station->northA, station->northB);
     printf("East =%d.%d\n", station->eastA, station->eastB);
+#endif
 }
 
 
 void dump_arr(char* title, u_int8* buf, int index, int length)
 {
+#ifdef CONSOLE
     int i;
     printf("%s", title);
     for(i = 0; i < length; i++)
         printf("%02d,", buf[i+index]);
     printf("\n");
+#endif
 }
 
 

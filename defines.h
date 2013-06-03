@@ -9,6 +9,7 @@
 #ifndef Delerrok_defines_h
 #define Delerrok_defines_h
 
+// #define CONSOLE
 
 
 #define SIZE_OF_CARD_ID 8

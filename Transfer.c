@@ -235,11 +235,12 @@ double timeLimitCheck(history_t* hist, transfer_t* transfer, u_int8* timestamp)
     struct tm histTime = makeTimeYYMMDDHHmmSS(hist->timestamp);
     struct tm limit = addMin(histTime, transfer->maxMinutes);
     
-#ifdef DEBUG
-    printf("now=%02d:%02d   hist=%02d:%02d   lim=%02d:%02d\n", now.tm_hour, now.tm_min, histTime.tm_hour, histTime.tm_min, limit.tm_hour, limit.tm_min);
-#endif
     double d = datetimeCompare(now, limit);
+    
+#ifdef CONSOLE
+    printf("now=%02d:%02d   hist=%02d:%02d   lim=%02d:%02d\n", now.tm_hour, now.tm_min, histTime.tm_hour, histTime.tm_min, limit.tm_hour, limit.tm_min);
     printf("%f\n", d);
+#endif
     return datetimeCompare(now, limit);
      
     return 0;

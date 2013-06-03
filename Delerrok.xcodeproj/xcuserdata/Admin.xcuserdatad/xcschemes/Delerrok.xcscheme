@@ -44,7 +44,7 @@
       </PathRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-c samplepartition1.conf -p 12345"
+            argument = "-c samplepartition1.json -p 12345"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

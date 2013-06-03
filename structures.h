@@ -19,9 +19,9 @@ typedef struct
     u_int8 cardID[SIZE_OF_CARD_ID];
     u_int8 cardType;
     u_int8 expireDate[SIZE_OF_YYYYMMDD]; 
-    short northA; // 整数部
+    short northA;     // 整数部
     u_int32 northB;   // 小数点以下
-    short eastA;  // 整数部
+    short eastA;      // 整数部
     u_int32 eastB;    // 小数点以下
     u_int8 from[SIZE_OF_STATION_ID];
     u_int8 to[SIZE_OF_STATION_ID];
@@ -129,6 +129,7 @@ typedef struct
     u_int8 numOfValidPaymentType;
     u_int8 validPaymentType[SIZE_OF_VALID_PAYMENT_TYPE_FOR_TRANSFER];
     u_int8 connectingRouteOnly;
+    u_int8 directionRestriction;
 } __attribute__ ((packed)) transfer_t;
 
 
@@ -197,6 +198,7 @@ typedef struct
     u_int8 modeType;
     u_int8 routeType;
     u_int8 direction;
+    u_int8 validDirection;
     u_int8 numOfConnectedRoute;
     u_int8 connectedRouteList[SIZE_OF_ROUTE_ID*SIZE_OF_CONNECTED_ROUTE_LIST];
     u_int16 numOfStation;
