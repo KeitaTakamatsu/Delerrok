@@ -25,4 +25,8 @@ long long makeStationIDFromGPS(txn_t* txn, route_t* route);
 long long makeStationIDFromStation(station_t* station);
 long long makeStationID(u_int8* routeID, u_int8* stationID);
 
+
+long long makeStationIDFromGPS2(txn_t* txn, route_t* r);
+long long gpsCompValue(txn_t* txn, station_t* st);
+
 #endif

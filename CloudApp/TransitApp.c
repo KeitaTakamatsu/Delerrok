@@ -74,12 +74,13 @@ pass_t currentPass;
 response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 {
     response_t response;
-    long long a = makeStationIDFromGPS(txn, route);
+    // long long a = makeStationIDFromGPS(txn, route);
+    long long b = makeStationIDFromGPS2(txn, route);
     
     dump_txn(txn);
+    // int sdbresult = SDBAssign(SDB_INDEX_STATION, *((long long*)(&a)));
+    int sdbresult = SDBAssign(SDB_INDEX_STATION, b);
     
-    
-    int sdbresult = SDBAssign(SDB_INDEX_STATION, *((long long*)(&a)));
     SDBRead(SDB_INDEX_STATION, 0, &from, sizeof(station_t));
     dump_station(&from);
     
@@ -115,7 +116,6 @@ BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
 }
 
 
-
 u_int8 tmpStationID[21];
 long long makeStationIDFromGPS(txn_t* txn, route_t* route)
 {
@@ -126,14 +126,50 @@ long long makeStationIDFromGPS(txn_t* txn, route_t* route)
     blockcopy(&txn->northB, 0, tmpStationID, idx, 4); idx += 4;
     blockcopy(&txn->eastA, 0, tmpStationID, idx, 2);  idx += 2;
     blockcopy(&txn->eastB, 0, tmpStationID, idx, 4);  idx += 4;
-    
     long long l = md5(tmpStationID, 21);
     dump_arr("ID=", &l, 0, 8);
-    
     return l;
 }
 
+
 station_t st;
+long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
+{
+    int i;
+    long long sdbid, var;
+    double comp, max = -9999999;
+    
+    for(i = 0; i < r->numOfStation; i++)
+    {
+        sdbid = *((long long*) (r->stationIDList+i*8));
+        SDBAssign(SDB_INDEX_STATION,sdbid);
+        SDBRead(SDB_INDEX_STATION, 0, &st, sizeof(station_t));
+        SDBRelease(SDB_INDEX_STATION);
+        
+        if(max < (comp = gpsCompValue(txn, &st)))
+        {
+            max = comp;
+            var = sdbid;
+        }
+    }
+    return var;
+}
+
+long long gpsCompValue(txn_t* txn, station_t* st)
+{
+    double txn_north = ((double)txn->northA)+((double)txn->northB)/1000000;
+    double txn_east = ((double)txn->eastA)+((double)txn->eastB)/1000000;
+    double st_north = ((double)st->northA)+((double)st->northB)/1000000;
+    double st_east  = ((double)st->eastA)+((double)st->eastB)/1000000;
+    
+    double a = st_north - txn_north;
+    double b = st_east - txn_east;
+    return a+b;
+}
+
+
+
+
 station_t getStationFromGPS(txn_t* txn, route_t* route)
 {
     int result = SDBAssign(SDB_INDEX_STATION, makeStationIDFromGPS(txn, route));

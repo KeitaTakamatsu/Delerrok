@@ -175,6 +175,7 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
     SDBAssign(SDB_INDEX_AGENCY, l);
     SDBRead(SDB_INDEX_AGENCY, 0, agency, sizeof(agency_t));
     dump_agency(agency);
+    dump_transfer(&(agency->policy.transfer));
     
     l = *((long long*)txn_data->cardID);
     SDBAssign(SDB_INDEX_ACCOUNT, l);
@@ -219,6 +220,7 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_AGENCY:
         {
             agency_t ag = *((agency_t*) data->data);
+            dump_transfer(&(ag.policy.transfer));
             long long l = *((long long*)data->sdbID);
             SDBAssign(data->sdbindex, l);
             SDBWrite(data->sdbindex, &ag, 0, sizeof(agency_t));
@@ -245,8 +247,10 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_STATION:
         {
             station_t station = *((station_t*) data->data);
-            long long id = makeStationIDFromStation(&station);
-            SDBAssign(data->sdbindex,  id);
+            
+            // long long id = makeStationIDFromStation(&station);
+            // SDBAssign(data->sdbindex,  id);
+            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
             SDBRelease(data->sdbindex);
             break;
@@ -255,6 +259,7 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         {
             farePolicy_t policy = *((farePolicy_t*) data->data);
             dump_policy(&policy);
+            dump_transfer(&(policy.transfer));
             
             agency_t ag;
             SDBAssign(SDB_INDEX_AGENCY, *((long long*) data->sdbID));

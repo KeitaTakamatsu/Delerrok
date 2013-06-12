@@ -274,6 +274,48 @@ void dump_policy(farePolicy_t* policy)
 #endif
 }
 
+void dump_transfer(transfer_t* tr)
+{
+#ifdef CONSOLE
+    printf("[Transfer]\n");
+    printf("AllowedTransfer=%d\n", tr->allowedTransfer);
+    printf("SameRouteOnly=%d\n", tr->sameRouteOnly);
+    //printf("NotOnSameRoute=%d\n", tr->not)
+    printf("MaxTimePeriod=%d\n", tr->maxTimePeriod);
+    printf("MaxMinutes=%d\n", tr->maxMinutes);
+    printf("OppositDirectionRestriction=%d\n", tr->oppositDirectionRestriction);
+    printf("SameDirectionRestriction=%d\n", tr->sameDirectionRestriction);
+    printf("DesignatedStopsOnly=%d\n", tr->designatedStopsOnly);
+    printf("NumOfDesignatedStops=%d\n", tr->numOfDesignatedStops);
+    int i;
+    for(i = 0; i < tr->numOfDesignatedStops; i++)
+    {
+        printf("   DesignatedStops%02d=",i);
+        dump_arr("", tr->designatedStops, i*8, 8);
+    }
+    printf("SameRouteType=%d\n", tr->sameRouteType);
+    printf("SpecifiedRouteCombinations=%d\n", tr->specifiedRouteCombinations);
+    printf("NumOfRouteCombination=%d\n", tr->numOfRouteCombination);
+    for(i = 0; i < tr->numOfDesignatedStops; i++)
+    {
+        printf("   RouteCombinationFrom%02d=",i);
+        dump_arr("", tr->routeComtinationFrom, i*8, 8);
+        printf("   RouteCombinationTo%02d=",i);
+        dump_arr("", tr->routeComtinationTo, i*8, 8);
+    }
+    printf("NumOfValidPaymentType=%d\n", tr->numOfValidPaymentType);
+    for(i = 0; i < tr->numOfDesignatedStops; i++)
+    {
+        printf("   ValidPaymentType%02d=%d\n", i, tr->validPaymentType[i]);
+    }
+    printf("ConnectingRouteOnly=%d\n", tr->connectingRouteOnly);
+    printf("DirectionRestrictions=%d\n", tr->directionRestriction);
+    printf("FreeFareTransfer=%d\n", tr->freeFareTransfer);
+    printf("FreeFareTransferCount=%d\n", tr->freeFareTransferCount);
+#endif
+}
+
+
 void dump_account(account_t* ac)
 {
 #ifdef CONSOLE

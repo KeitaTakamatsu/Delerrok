@@ -27,8 +27,14 @@ u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t*
 u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td);
 
 
-u_int8 makeTransferType(route_t* route, transferData_t* td)
+u_int8 makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
 {
+    if(t->freeFareTransfer)
+    {
+        if(td->transferCount >= t->freeFareTransferCount)
+            return TRANSFER_TYPE_FREE;
+    }
+    
     if(route->routeType == td->originalRouteType)
         return TRANSFER_TYPE_NORMAL;
     if(route->routeType == ROUTE_TYPE_REGULAR && td->originalRouteType == ROUTE_TYPE_EXPRESS)
@@ -40,14 +46,13 @@ u_int8 makeTransferType(route_t* route, transferData_t* td)
 }
 
 
-u_int8 checkTransferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* account, station_t* station, u_int8* timestamp, transferData_t* newTransferData)
+u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* account, station_t* station, u_int8* timestamp, transferData_t* newTransferData)
 {
     transfer_t* t = &agency->policy.transfer;
     transferData_t* td = &account->transferData;
     dump_station(station);
     dump_route(route);
-    dump_transferData(&account->transferData);
-    
+    dump_transferData(&account->transferData);    
     
     if(!t->allowedTransfer)
         goto NO_TRANSFER_EXIT;
@@ -59,8 +64,6 @@ u_int8 checkTransferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t
         goto TRANSFER_SUCCESS_EXIT;
     if(!checkDirection(t, route, td))
         goto NO_TRANSFER_EXIT;
-    // if(!checkNotOnSameRoute(t, route, td))
-    //    return NO_TRANSFER;
     if(!checkDesignateStopsOnly(t, station))
         goto NO_TRANSFER_EXIT;
     if(!checkConnectingRouteOnly(t, route,station, td))
@@ -68,7 +71,7 @@ u_int8 checkTransferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t
     
 TRANSFER_SUCCESS_EXIT:
     newTransferData->transferCount++;
-    return makeTransferType(route, td);    
+    return makeTransferType(t, route, td);
     
 NO_TRANSFER_EXIT:
     newTransferData->originalRouteType = route->routeType;
@@ -142,7 +145,7 @@ u_int8 checkMaxTimePeriod(transfer_t* t, u_int8* timestamp, transferData_t* td)
 
 u_int8 checkDesignateStopsOnly(transfer_t* t, station_t* station)
 {
-    if(!t->designateStopsOnly)
+    if(!t->designatedStopsOnly)
         return 1;
     
     int i;

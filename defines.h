@@ -9,7 +9,7 @@
 #ifndef Delerrok_defines_h
 #define Delerrok_defines_h
 
-// #define CONSOLE
+#define CONSOLE
 
 
 #define SIZE_OF_CARD_ID 8
@@ -128,6 +128,7 @@
 #define TRANSFER_TYPE_NORMAL 1
 #define TRANSFER_TYPE_REGULAR_TO_EXPRESS 2
 #define TRANSFER_TYPE_EXPRESS_TO_REGULER 3
+#define TRANSFER_TYPE_FREE 0xFF
 
 // Transfer Check Type
 #define CHECK_TYPE_CONNECTED_ROUTE 1

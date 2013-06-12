@@ -41,5 +41,6 @@ void dump_agency(agency_t* ag);
 void dump_responseData(response_t* res);
 void dump_policy(farePolicy_t* policy);
 void dump_station(station_t* station);
+void dump_transfer(transfer_t* tr);
 void dump_arr(char* title, u_int8* buf, int index, int length);
 #endif

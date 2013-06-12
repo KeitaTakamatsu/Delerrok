@@ -118,7 +118,7 @@ typedef struct
     u_int16 maxMinutes;
     u_int8 oppositDirectionRestriction;
     u_int8 sameDirectionRestriction;
-    u_int8 designateStopsOnly;
+    u_int8 designatedStopsOnly;
     u_int8 numOfDesignatedStops;
     u_int8 designatedStops[SIZE_OF_STATION_ID * SIZE_OF_DESIGNATED_STOPS];
     u_int8 sameRouteType;
@@ -130,6 +130,8 @@ typedef struct
     u_int8 validPaymentType[SIZE_OF_VALID_PAYMENT_TYPE_FOR_TRANSFER];
     u_int8 connectingRouteOnly;
     u_int8 directionRestriction;
+    u_int8 freeFareTransfer;
+    u_int8 freeFareTransferCount;
 } __attribute__ ((packed)) transfer_t;
 
 

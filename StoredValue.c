@@ -25,19 +25,28 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
 {
     transferData_t newTransferData;
     farePolicy_t* policy = &agency->policy;
+    fare_t fare;
     
     if(!policy->storedValueEnabled)
         return makeResponse(0, 0, 0, 0, account->specialFareProgram, NULL, 0, account->balance);
     
     memcpy(&newTransferData, &account->transferData, sizeof(transferData_t));
     
-    int transferResult = checkTransferFlat(txn, agency, route, account, station, txn->timestamp, &newTransferData);
-    long long flatFareID = makeFlatFareID(station->zone.zoneID, account->specialFareProgram, transferResult, 0);
-    fare_t fare;
+    int transferResult = transferFlat(txn, agency, route, account, station, txn->timestamp, &newTransferData);
+    long long flatFareID;
     
-    SDBAssign(SDB_INDEX_FARE, flatFareID);
-    SDBRead(SDB_INDEX_FARE, 0, &fare, sizeof(fare_t));
-    SDBRelease(SDB_INDEX_FARE);
+    if(transferResult == TRANSFER_TYPE_FREE)
+    {
+        fare.fareValue = 0;
+    }
+    else
+    {
+        flatFareID = makeFlatFareID(station->zone.zoneID, account->specialFareProgram, transferResult, 0);
+        SDBAssign(SDB_INDEX_FARE, flatFareID);
+        SDBRead(SDB_INDEX_FARE, 0, &fare, sizeof(fare_t));
+        SDBRelease(SDB_INDEX_FARE);
+    }
+        
     
     if(account->balance >= fare.fareValue)
     {
