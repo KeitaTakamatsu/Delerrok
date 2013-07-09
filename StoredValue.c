@@ -20,7 +20,7 @@
 #include "Util.h"
 
 
-
+/* Process Stored Value for Flat Fare and return Response Data. */
 response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, route_t* route, station_t* station)
 {
     transferData_t newTransferData;
@@ -32,6 +32,7 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
     
     memcpy(&newTransferData, &account->transferData, sizeof(transferData_t));
     
+    /* Get Transfer Result */
     int transferResult = transferFlat(txn, agency, route, account, station, txn->timestamp, &newTransferData);
     long long flatFareID;
     
@@ -41,32 +42,43 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
     }
     else
     {
+        /* Make Fare ID for Flat Fare */
         flatFareID = makeFlatFareID(station->zone.zoneID, account->specialFareProgram, transferResult, 0);
         SDBAssign(SDB_INDEX_FARE, flatFareID);
         SDBRead(SDB_INDEX_FARE, 0, &fare, sizeof(fare_t));
         SDBRelease(SDB_INDEX_FARE);
     }
         
-    
+    /* Update Account */
     if(account->balance >= fare.fareValue)
     {
         account->balance -= fare.fareValue;
-        account->transferData = newTransferData;
-        account->lastHistory = makeHistoryData(1, route, station, txn->timestamp, 1);
+        /* Update Transfer Data */
+        if(transferResult)
+            account->transferData = newTransferData;
+        /* Update LastHistory */
+        account->lastHistory = makeHistoryData(agency->agencyID, 1, route, station, txn->timestamp, 1);
+
         dump_history(&account->lastHistory);
+        
+        /* Write Account Data to SDB */
         SDBWrite(SDB_INDEX_ACCOUNT, account, 0, sizeof(account_t));
         return makeResponse(OPEN, fare.fareValue, 0, 0, account->specialFareProgram, NULL, 0, account->balance);
     }
     else
     {
+        /* Minus Balance */
         if(!policy->minusBalanceEnabled)
             return makeResponse(0, fare.fareValue, 0, 0, account->specialFareProgram, NULL, 0, account->balance);
-        
+        /* Update Transfer Data */
         if(transferResult)
             account->transferData = newTransferData;
-        account->lastHistory = makeHistoryData(1, route, station, txn->timestamp, 1);
+        /* Update LastHistory */
+        account->lastHistory = makeHistoryData(agency->agencyID, 1, route, station, txn->timestamp, 1);
+        
+        /* Write Account Data to SDB */
         SDBWrite(SDB_INDEX_ACCOUNT, account, 0, sizeof(account_t));
-        return makeResponse(OPEN, fare.fareValue, 0, 0, account->specialFareProgram, NULL, 0, account->balance);        
+        return makeResponse(OPEN, fare.fareValue, 0, 0, account->specialFareProgram, NULL, 0, account->balance);
     }
 }
 

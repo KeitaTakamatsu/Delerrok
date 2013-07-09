@@ -19,7 +19,7 @@ int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* fare
 #endif
         return 0;
     }
-    if(!isCardStatusValid(account, farePolicy))
+    if(!isAccountValid(account, farePolicy))
     {
 #ifdef CONSOLE
         printf("[CheckAccount] HIT--002\n");

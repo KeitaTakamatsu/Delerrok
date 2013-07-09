@@ -36,23 +36,27 @@ history_t newhist;
 long long fareID;
 long long stationIDTo;
 long long stationIDFrom;
+
+
+
 response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 {
-    dump_agency(agency);
     policy = &agency->policy;
+    
+    dump_agency(agency);
     dump_policy(policy);
     dump_account(account);
     
     if(!checkTxnData(txn, policy))
     {
-        // Txnデータが有効ではない
-        // レスポンスを返して終了
+        // Txn data is invalid
+        // Return response and exit.
         return makeResponse(0, 0, MESSAGE_CODE_NONE, MESSAGE_CODE_NONE, account->specialFareProgram, NULL, 0, account->balance);
     }
     if(!checkAccount(agency->agencyGroupCode, account, policy, txn->timestamp, txn->expireDate))
     {
-        // アカウントが有効ではない
-        // レスポンスを返して終了
+        // Account is invalid.
+        // Return response and exit.
         return makeResponse(0, 0, MESSAGE_CODE_NONE, MESSAGE_CODE_NONE, account->specialFareProgram, NULL, 0, account->balance);
     }
     
@@ -70,32 +74,59 @@ response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 
 
 
+
 pass_t currentPass;
 response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 {
+#ifdef DEBUG_MODE
+    /* Cloud App Debug Mode send Account Data that is not influenced by current transaction to Client. */
+    memcpy(&beforeAccount, account, sizeof(account_t));
+#endif
+    
     response_t response;
-    // long long a = makeStationIDFromGPS(txn, route);
-    long long b = makeStationIDFromGPS2(txn, route);
-    
+    long long stationID = makeStationIDFromGPS2(txn, route);
     dump_txn(txn);
-    // int sdbresult = SDBAssign(SDB_INDEX_STATION, *((long long*)(&a)));
-    int sdbresult = SDBAssign(SDB_INDEX_STATION, b);
     
+    /* Get Station Data from SDB */
+    SDBAssign(SDB_INDEX_STATION, stationID);
     SDBRead(SDB_INDEX_STATION, 0, &from, sizeof(station_t));
     dump_station(&from);
+    
+#ifdef DEBUG_MODE
+    /* Cloud App Debug Mode send Station Data to Client. */
+    memcpy(&stationForDebug, &from, sizeof(station_t));
+#endif
     
     int hasPass, passNumber;
     int passResult = getPass(txn, agency, account, &from, NULL, &hasPass, &passNumber);
     currentPass = account->passList[passNumber];
     if(passResult)
     {
-        response = passProcessFlat(passResult, txn, account, &currentPass, route, &from, NO_TRANSFER, 0);
+        /*
+            PASS_RESULT_VALID 1
+            PASS_RESULT_UPDATE_TIME 2
+            PASS_RESULT_UPDATE_TRIP 3
+        */        
+        
+        response = passProcessFlat(agency->agencyID, passResult, txn, account, &currentPass, route, &from, NO_TRANSFER, 0);
         SDBRelease(SDB_INDEX_STATION);
+        
+#ifdef DEBUG_MODE
+        /* Cloud App Debug Mode send Account Data that is influenced by current transaction to Client. */
+        memcpy(&afterAccount, account, sizeof(account_t));
+#endif
+        
         return response;
     }
     
     // Stored Value
     response = storedValueFlat(txn, account, agency, route, &from);
+    
+#ifdef DEBUG_MODE
+    /* Cloud App Debug Mode send Account Data that is influenced by current transaction to Client. */
+    memcpy(&afterAccount, account, sizeof(account_t));
+#endif    
+    
     return response;
 }
 
@@ -104,35 +135,30 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
 BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
 {
     int i;
+    /* Check Card Type */
     for(i = 0; i < policy->numOfValidCardType; i++)
     {
         if(txn->cardType == policy->validCardTypeList[i])
-            return 1;
+            break;
+        if(i == SIZE_OF_VALID_CARD_LIST-1)
+        {
+            #ifdef DEBUG_CONSOLE
+                printf("[checkTnxData] ****HIT--A--\n");
+            #endif
+            return 0;
+        }
     }
-#ifdef CONSOLE
-    printf("[checkTnxData] ****HIT--A--\n");
-#endif
+    
+    /* Add more check as necessary */
+    
     return 0;
 }
 
 
-u_int8 tmpStationID[21];
-long long makeStationIDFromGPS(txn_t* txn, route_t* route)
-{
-    int idx = 0;
-    tmpStationID[idx] = STATION_ID_TYPE_GPS; idx++;
-    blockcopy(route->routeID, 0, tmpStationID, idx, SIZE_OF_ROUTE_ID); idx += SIZE_OF_ROUTE_ID;
-    blockcopy(&txn->northA, 0, tmpStationID, idx, 2); idx += 2;
-    blockcopy(&txn->northB, 0, tmpStationID, idx, 4); idx += 4;
-    blockcopy(&txn->eastA, 0, tmpStationID, idx, 2);  idx += 2;
-    blockcopy(&txn->eastB, 0, tmpStationID, idx, 4);  idx += 4;
-    long long l = md5(tmpStationID, 21);
-    dump_arr("ID=", &l, 0, 8);
-    return l;
-}
 
 
 station_t st;
+/* I will change this method soon. */
 long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
 {
     int i;
@@ -166,50 +192,6 @@ long long gpsCompValue(txn_t* txn, station_t* st)
     double b = st_east - txn_east;
     return a+b;
 }
-
-
-
-
-station_t getStationFromGPS(txn_t* txn, route_t* route)
-{
-    int result = SDBAssign(SDB_INDEX_STATION, makeStationIDFromGPS(txn, route));
-    SDBRead(SDB_INDEX_STATION, 0, &st, sizeof(station_t));
-    SDBRelease(SDB_INDEX_STATION);
-    return st;
-}
-
-station_t getStation(u_int8* routeID, u_int8* stationID)
-{
-    int result = SDBAssign(SDB_INDEX_STATION, makeStationID(routeID, stationID));
-    SDBRead(SDB_INDEX_STATION, 0, &st, sizeof(station_t));
-    SDBRelease(SDB_INDEX_STATION);
-    return st;
-}
-
-
-long long makeStationIDFromStation(station_t* station)
-{
-    int idx = 0;
-    tmpStationID[idx] = STATION_ID_TYPE_GPS; idx++;
-    blockcopy(station->routeID, 0, tmpStationID, idx, SIZE_OF_ROUTE_ID); idx += SIZE_OF_ROUTE_ID;
-    blockcopy(&station->northA, 0, tmpStationID, idx, 2); idx += 2;
-    blockcopy(&station->northB, 0, tmpStationID, idx, 4); idx += 4;
-    blockcopy(&station->eastA, 0, tmpStationID, idx, 2);  idx += 2;
-    blockcopy(&station->eastB, 0, tmpStationID, idx, 4);  idx += 4;
-    return md5(tmpStationID, 21);
-}
-
-
-long long makeStationID(u_int8* routeID, u_int8* stationID)
-{
-    int idx = 0;
-    tmpStationID[idx] = STATION_ID_TYPE_DIRECT; idx++;
-    blockcopy(routeID, 0, tmpStationID, idx, SIZE_OF_ROUTE_ID); idx += SIZE_OF_ROUTE_ID;
-    blockcopy(stationID, 0, tmpStationID, idx, SIZE_OF_STATION_ID); idx += SIZE_OF_STATION_ID;
-    return md5(tmpStationID, 21);
-}
-
-
 
 
 

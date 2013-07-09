@@ -9,7 +9,8 @@
 #ifndef Delerrok_defines_h
 #define Delerrok_defines_h
 
-#define CONSOLE
+#define DEBUG_CONSOLE
+#define DEBUG_MODE
 
 
 #define SIZE_OF_CARD_ID 8
@@ -172,10 +173,10 @@
 #define SFP_OTHER2 15
 
 // Direction
-#define NORTH 1
-#define SOUTH 2
-#define EAST 3
-#define WEST 4
+#define NORTH 0x01
+#define SOUTH 0x02
+#define EAST 0x04
+#define WEST 0x08
 
 
 #define OPEN 1
@@ -186,7 +187,7 @@
 #define STATION_ID_TYPE_GPS 2
 
 //
-#define AGENCY_GROUP_CODE_ANY 0
+#define AGENCY_GROUP_CODE_ANY 0xFF
 
 typedef unsigned long long u_int64;
 typedef unsigned int u_int32;

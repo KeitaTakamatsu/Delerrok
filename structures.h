@@ -171,9 +171,9 @@ typedef struct
     u_int8 numOfAccountStatus;
     u_int8 validAccountStatusList[SIZE_OF_VALID_ACCOUNT_STATUS_LIST];
     transfer_t transfer;
-    passback_t passback;
-    u_int8 numOfPeakTime;
-    peaktime_t peaktimeList[SIZE_OF_PEAKTIME_LIST];
+    // passback_t passback;
+    // u_int8 numOfPeakTime;
+    // peaktime_t peaktimeList[SIZE_OF_PEAKTIME_LIST];
 } __attribute__ ((packed)) farePolicy_t;
 
 

@@ -15,7 +15,7 @@
 #include "defines.h"
 #include "structures.h"
 
-history_t makeHistoryData(u_int8 historyType, route_t* route, station_t* station, u_int8* timestamp,
+history_t makeHistoryData(u_int8* agencyID, u_int8 historyType, route_t* route, station_t* station, u_int8* timestamp,
                           u_int8 paymentType);
 
 #endif

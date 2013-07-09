@@ -1,17 +1,21 @@
-//
-//  Pass.c
-//  Delerrok
-//
-//  Created by Keita Takamatsu on 2013/02/26.
-//  Copyright (c) 2013年 Keita Takamatsu. All rights reserved.
-//
-
 #include "Pass.h"
 #include "ResponseData.h"
 #include "HistoryData.h"
 #include "Util.h"
 
 
+/*
+ Get valid Pass from Account.
+ This method return Pass Result.
+    PASS_RESULT_INVALID 0
+        Account does not have a valid Pass.
+    PASS_RESULT_VALID 1
+        Account have a valid Pass.
+    PASS_RESULT_UPDATE_TIME 2
+        Account have a pending Time Based Pass.
+    PASS_RESULT_UPDATE_TRIP 3
+        Account have a Trip Based Pass.
+ */
 int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, station_t* to, int* hasPass, int* passNumber)
 {
     int i, result;
@@ -30,33 +34,37 @@ int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, s
 }
 
 
-history_t tmp_hist;
+// history_t tmp_hist;
 response_t tmp_res;
-response_t passProcessFlat(int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, u_int8 transfer, u_int8 transferCount)
+
+/*
+    This method return Response Data and update Last History.
+*/
+response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, u_int8 transfer, u_int8 transferCount)
 {
     switch(passCheckResult)
     {
         case RESULT_VALID:
         {
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             
             break;
         }
         case RESULT_UPDATE_TIME:
         {
-            struct tm* newtime = getActivatedTimeBasedPass(pass, txn->timestamp);
+            struct tm* newtime = getActivatedTimeBasedPassTime(pass, txn->timestamp);
             struct tm now = makeTimeYYMMDDHHmmSS(txn->timestamp);
             timeBasedPassActivate(pass, now, *newtime);
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             break;
         }
         case RESULT_UPDATE_TRIP:
         {
             pass->numOfTripBasedPass--;
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             
             break;
         }
@@ -89,6 +97,7 @@ int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* 
 }
 
 
+
 int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zoneID, u_int8* timestamp)
 {
     int result = 0;
@@ -101,25 +110,31 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     if(!checkValidZone(pass, zoneID))
         return PASS_RESULT_INVALID;
     
+    /* Update soon. Need Region Code. */
     if(!compare(agencyID, 0, pass->validAgencyID, 0, 2))
         return PASS_RESULT_INVALID;
-        
+    /* ------------------------------ */
+    
     if(pass->passType == PASS_TYPE_TIME)
     {
+        /*
+          Update Time Based Pass.
+         */
+        
         if(pass->timeBasedPassAddTimeType != 0)
         {
-            newtime = getActivatedTimeBasedPass(pass, timestamp);
+            newtime = getActivatedTimeBasedPassTime(pass, timestamp);
             if(newtime == NULL)
             {
 #ifdef CONSOLE
-                printf("HIT---PASS---D\n");
+                printf("This Pass doesn't have value for renew.\n");
 #endif
                 return PASS_RESULT_INVALID;
             }
             else
             {
 #ifdef CONSOLE
-                printf("HIT---PASS---RESULT_NEED_UPDATE_TIME\n");
+                printf("RESULT_NEED_UPDATE_TIME\n");
 #endif
                 expire = *newtime;
                 start = now;
@@ -142,13 +157,11 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
             result = PASS_RESULT_UPDATE_TIME;
             break;
         case PASS_TYPE_TRIP:
-            if(pass->numOfTripBasedPass <= 0)
-                return PASS_RESULT_INVALID;
-            else
-                result = PASS_RESULT_UPDATE_TRIP;
+            result = PASS_RESULT_UPDATE_TRIP;
             break;
     }
     
+    /* Check Datetime */
     int _a,_b;
     _a = datetimeCompare(now, start);
     _b = datetimeCompare(now, expire);
@@ -179,8 +192,10 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     return result;
 }
 
-struct tm activatedPass;
-struct tm* getActivatedTimeBasedPass(pass_t* pass, u_int8* timestamp)
+struct tm activatedPassTime;
+
+/* This method return Time that is activated. */
+struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
 {
     if(pass->timeBasedPassAddTime <= 0)
         return NULL;
@@ -189,25 +204,25 @@ struct tm* getActivatedTimeBasedPass(pass_t* pass, u_int8* timestamp)
     switch (pass->timeBasedPassAddTimeType)
     {
         case TBPASS_ACTIVATE_TYPE_HOUR:
-            activatedPass = addTime(time, 0, 0, 0, pass->timeBasedPassAddTime);
+            activatedPassTime = addTime(time, 0, 0, 0, pass->timeBasedPassAddTime);
             break;
         case TBPASS_ACTIVATE_TYPE_DAYS:
-            activatedPass = addTime(time, 0, 0, pass->timeBasedPassAddTime, 0);
+            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassAddTime, 0);
             break;
         case TBPASS_ACTIVATE_TYPE_WEEKS:
-            activatedPass = addTime(time, 0, 0, pass->timeBasedPassAddTime*7, 0);
+            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassAddTime*7, 0);
             break;
         case TBPASS_ACTIVATE_TYPE_MONTH:
-            activatedPass = addTime(time, 0, pass->timeBasedPassAddTime, 0, 0);
+            activatedPassTime = addTime(time, 0, pass->timeBasedPassAddTime, 0, 0);
             break;
         case TBPASS_ACTIVATE_TYPE_YEAR:
-            activatedPass = addTime(time, pass->timeBasedPassAddTime, 0, 0, 0);
+            activatedPassTime = addTime(time, pass->timeBasedPassAddTime, 0, 0, 0);
             break;
     }
-    return &activatedPass;
+    return &activatedPassTime;
 }
 
-
+/* Activate Time Based Pass */
 void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
 {    
     makeYYYYMMDD(now, pass->passStartDate);

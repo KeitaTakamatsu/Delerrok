@@ -17,6 +17,7 @@
 #include "Util.h"
 
 
+
 u_int8 checkSameRoute(transfer_t* t, route_t* route, transferData_t* td);
 u_int8 checkMaxTimePeriod(transfer_t* t, u_int8* timestamp, transferData_t* td);
 u_int8 checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td);
@@ -26,7 +27,10 @@ u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* statio
 u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist);
 u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td);
 
-
+/*
+    This method return Transfer Type.
+    Transfer is used to Fare ID.
+*/
 u_int8 makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(t->freeFareTransfer)
@@ -45,7 +49,7 @@ u_int8 makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
     return TRANSFER_TYPE_NORMAL;
 }
 
-
+/* This method return Transfer Type.*/
 u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* account, station_t* station, u_int8* timestamp, transferData_t* newTransferData)
 {
     transfer_t* t = &agency->policy.transfer;
@@ -60,8 +64,8 @@ u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* acc
         goto NO_TRANSFER_EXIT;
     if(!checkValidPaymentType(t, txn))
         goto NO_TRANSFER_EXIT;
-    if(checkSameRoute(t, route, td))
-        goto TRANSFER_SUCCESS_EXIT;
+    //if(checkSameRoute(t, route, td))
+    //   goto TRANSFER_SUCCESS_EXIT;
     if(!checkDirection(t, route, td))
         goto NO_TRANSFER_EXIT;
     if(!checkDesignateStopsOnly(t, station))
@@ -186,7 +190,7 @@ u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t*
     return 0;
 }
 
-// 保留
+/* putting on hold */
 u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn)
 {
     if(!t->validPaymentType)

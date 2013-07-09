@@ -9,6 +9,7 @@
 #include "ResponseData.h"
 
 response_t res;
+/* Make Response Data. */
 response_t makeResponse(int open, int fare, int messageCode, int errorCode, int sfp, u_int8* passExpireDate, int numOfTripBasedPass, int balance)
 {    
     const u_int8 INVALID_DATE[] = {0x01, 0x01,0x00,0x01};
