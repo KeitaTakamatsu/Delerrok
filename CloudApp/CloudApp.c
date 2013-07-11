@@ -276,8 +276,11 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
             
             SDBAssign(data->sdbindex, l);
             SDBRead(data->sdbindex, 0, &ag, sizeof(agency_t));
-            dump_policy(&ag.policy);
+            printf("------------------------------------\n");
+            dump_agency(&ag);
+            dump_policy(&(ag.policy));
             SDBRelease(data->sdbindex);
+            printf("------------------------------------\n");
             break;
         }
         case SDB_INDEX_FARE:
