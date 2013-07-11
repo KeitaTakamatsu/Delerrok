@@ -265,12 +265,18 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         }
         case SDB_INDEX_AGENCY:
         {
+            printf("Data Index=%d\n", data->dataIndex);
+            agency_t ag;
+            
             /* Write Agency Data to SDB */
-            agency_t ag = *((agency_t*) data->data);
-            dump_transfer(&(ag.policy.transfer));
             long long l = *((long long*)data->sdbID);
             SDBAssign(data->sdbindex, l);
-            SDBWrite(data->sdbindex, &ag, 0, sizeof(agency_t));
+            SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
+            SDBRelease(data->sdbindex);
+            
+            SDBAssign(data->sdbindex, l);
+            SDBRead(data->sdbindex, 0, &ag, sizeof(agency_t));
+            dump_policy(&ag.policy);
             SDBRelease(data->sdbindex);
             break;
         }

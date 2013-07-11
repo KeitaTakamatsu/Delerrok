@@ -113,7 +113,6 @@ typedef struct
 {
     u_int8 allowedTransfer;
     u_int8 sameRouteOnly;
-    u_int8 notOnSameRoute;
     u_int8 maxTimePeriod;
     u_int16 maxMinutes;
     u_int8 oppositDirectionRestriction;
@@ -171,9 +170,6 @@ typedef struct
     u_int8 numOfAccountStatus;
     u_int8 validAccountStatusList[SIZE_OF_VALID_ACCOUNT_STATUS_LIST];
     transfer_t transfer;
-    // passback_t passback;
-    // u_int8 numOfPeakTime;
-    // peaktime_t peaktimeList[SIZE_OF_PEAKTIME_LIST];
 } __attribute__ ((packed)) farePolicy_t;
 
 
@@ -237,6 +233,7 @@ typedef struct
     u_int16 length;
     u_int8 sdbindex;
     u_int8 sdbID[8];
+    u_int32 dataIndex;
     u_int8 data[10000];
 } __attribute__ ((packed)) sdbtxn_t;
 

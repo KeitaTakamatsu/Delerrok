@@ -31,7 +31,7 @@
 #define SIZE_OF_VALID_CARD_STATUS_LIST 10
 #define SIZE_OF_HISTORY_LIST 10
 #define SIZE_OF_STATION_LIST 100
-#define SIZE_OF_ROUTE_LIST 100
+#define SIZE_OF_ROUTE_LIST 500
 #define SIZE_OF_CONNECTED_ROUTE_LIST 20
 #define SIZE_OF_PASS_LIST 2
 #define SIZE_OF_YYMMDDHHMMSS 6
@@ -197,8 +197,6 @@ typedef unsigned char BOOL;
 
 #define TRUE 1
 #define FALSE 0
-
-#define AIUEO "UNKO"
 
 #endif
 
