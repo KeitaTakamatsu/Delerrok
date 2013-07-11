@@ -110,9 +110,10 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     if(!checkValidZone(pass, zoneID))
         return PASS_RESULT_INVALID;
     
+    
     /* Update soon. Need Region Code. */
-    if(!compare(agencyID, 0, pass->validAgencyID, 0, 2))
-        return PASS_RESULT_INVALID;
+    //if(!compare(agencyID, 0, pass->validAgencyID, 0, 2))
+    //    return PASS_RESULT_INVALID;
     /* ------------------------------ */
     
     if(pass->passType == PASS_TYPE_TIME)
@@ -121,7 +122,7 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
           Update Time Based Pass.
          */
         
-        if(pass->timeBasedPassAddTimeType != 0)
+        if(pass->timeBasedPassRenewalUnits != 0)
         {
             newtime = getActivatedTimeBasedPassTime(pass, timestamp);
             if(newtime == NULL)
@@ -197,26 +198,17 @@ struct tm activatedPassTime;
 /* This method return Time that is activated. */
 struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
 {
-    if(pass->timeBasedPassAddTime <= 0)
+    if(pass->timeBasedPassNumberOfRenewalUnits <= 0)
         return NULL;
     
     struct tm time = makeTimeYYMMDDHHmmSS(timestamp);
-    switch (pass->timeBasedPassAddTimeType)
+    switch (pass->timeBasedPassRenewalUnits)
     {
         case TBPASS_ACTIVATE_TYPE_HOUR:
-            activatedPassTime = addTime(time, 0, 0, 0, pass->timeBasedPassAddTime);
+            activatedPassTime = addTime(time, 0, 0, 0, pass->timeBasedPassRenewalUnits);
             break;
         case TBPASS_ACTIVATE_TYPE_DAYS:
-            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassAddTime, 0);
-            break;
-        case TBPASS_ACTIVATE_TYPE_WEEKS:
-            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassAddTime*7, 0);
-            break;
-        case TBPASS_ACTIVATE_TYPE_MONTH:
-            activatedPassTime = addTime(time, 0, pass->timeBasedPassAddTime, 0, 0);
-            break;
-        case TBPASS_ACTIVATE_TYPE_YEAR:
-            activatedPassTime = addTime(time, pass->timeBasedPassAddTime, 0, 0, 0);
+            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassRenewalUnits, 0);
             break;
     }
     return &activatedPassTime;
@@ -227,8 +219,8 @@ void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
 {    
     makeYYYYMMDD(now, pass->passStartDate);
     makeYYYYMMDD(newTime, pass->passExpireDate);
-    pass->timeBasedPassAddTime = 0;
-    pass->timeBasedPassAddTimeType = 0;
+    pass->timeBasedPassRenewalUnits = 0;
+    pass->timeBasedPassNumberOfRenewalUnits = 0;
 }
 
 

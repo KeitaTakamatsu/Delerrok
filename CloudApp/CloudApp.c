@@ -42,7 +42,7 @@ response_t res_data;
 /* This method called when Cloud App start. */
 void CloudAppInit(void)
 {
-    fprintf(stdout, "CloudAppInit called\n");
+    printf("Account=%d\n", sizeof(pass_t));
     char tmp[16];
     md5(tmp, 16);
     
@@ -256,31 +256,25 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_ACCOUNT:
         {
             /* Write Account Data to SDB */
-            account_t ac = *((account_t*) data->data);
-            dump_account(&ac);
             SDBAssign(data->sdbindex, *((long long*)data->sdbID));
-            SDBWrite(data->sdbindex, &ac, 0, sizeof(account_t));
+            SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
+            
+            account_t ac;
+            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBRead(data->sdbindex, 0, &ac, sizeof(account_t));
+            SDBRelease(data->sdbindex);
+            dump_account(&ac);
+            
             break;
         }
         case SDB_INDEX_AGENCY:
         {
-            printf("Data Index=%d\n", data->dataIndex);
-            agency_t ag;
-            
             /* Write Agency Data to SDB */
             long long l = *((long long*)data->sdbID);
             SDBAssign(data->sdbindex, l);
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
-            
-            SDBAssign(data->sdbindex, l);
-            SDBRead(data->sdbindex, 0, &ag, sizeof(agency_t));
-            printf("------------------------------------\n");
-            dump_agency(&ag);
-            dump_policy(&(ag.policy));
-            SDBRelease(data->sdbindex);
-            printf("------------------------------------\n");
             break;
         }
         case SDB_INDEX_FARE:

@@ -59,18 +59,16 @@ typedef struct
 
 
 
-
 typedef struct
 {
     u_int8 passType;
-    u_int8 passStartDate[SIZE_OF_YYYYMMDD];
-    u_int8 passExpireDate[SIZE_OF_YYYYMMDD];
-    u_int8 timeBasedPassAddTimeType;
-    u_int16 timeBasedPassAddTime;
+    u_int8 passStartDate[SIZE_OF_YYMMDDHHMMSS];
+    u_int8 passExpireDate[SIZE_OF_YYMMDDHHMMSS];
+    u_int8 timeBasedPassRenewalUnits;
+    u_int16 timeBasedPassNumberOfRenewalUnits;
     u_int8 numOfTripBasedPass;
-    u_int8 confirmType;
-    u_int8 validAgencyID[SIZE_OF_AGENCY_ID];
-    u_int8 validReligionCode[SIZE_OF_RELIGION_CODE];
+    u_int8 numOfValidAgencies;
+    u_int8 validAgencyIDList[SIZE_OF_AGENCY_ID*SIZE_OF_VALID_AGENCY_LIST_FOR_PASS];
     u_int8 numOfValidZoneID;
     u_int8 validZoneIDList[SIZE_OF_VALID_ZONE_LIST_FOR_PASS*SIZE_OF_ZONE_ID];
 }__attribute__ ((packed)) pass_t;

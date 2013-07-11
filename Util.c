@@ -336,12 +336,10 @@ void dump_pass(pass_t* pass)
     printf("PassType=%d\n", pass->passType);
     printf("StartDate=%d%d/%d/%d\n", pass->passStartDate[0],pass->passStartDate[1],pass->passStartDate[2],pass->passStartDate[3]);
     printf("ExpireDate=%d%d/%d/%d\n", pass->passExpireDate[0],pass->passExpireDate[1],pass->passExpireDate[2],pass->passExpireDate[3]);
-    printf("TimeBasedPassAddTimeType=%d\n", pass->timeBasedPassAddTimeType);
-    printf("TimeBasedPassAddTime=%d\n", pass->timeBasedPassAddTime);
+    printf("TimeBasedPassAddTimeType=%d\n", pass->timeBasedPassRenewalUnits);
+    printf("TimeBasedPassAddTime=%d\n", pass->timeBasedPassNumberOfRenewalUnits);
     printf("NumOfTripBasedPass=%d\n", pass->numOfTripBasedPass);
-    printf("ConfirmType=%d\n", pass->confirmType);
-    dump_arr("ValidAgencyID=", pass->validAgencyID, 0, SIZE_OF_AGENCY_ID);
-    dump_arr("ReligionCode=", pass->validReligionCode, 0, SIZE_OF_RELIGION_CODE);
+    printf("NumOfValidAgencies=%d\n", pass->numOfValidAgencies);
     printf("NumOfValidZoneID=%d\n", pass->numOfValidZoneID);
     printf("ValidZoneIDList\n");
     for(i = 0; i < pass->numOfValidZoneID; i++)
