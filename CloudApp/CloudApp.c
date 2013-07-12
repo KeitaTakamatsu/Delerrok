@@ -42,7 +42,7 @@ response_t res_data;
 /* This method called when Cloud App start. */
 void CloudAppInit(void)
 {
-    printf("Account=%d\n", sizeof(pass_t));
+    printf("Account=%d\n", sizeof(route_t));
     char tmp[16];
     md5(tmp, 16);
     
@@ -260,12 +260,6 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
             
-            account_t ac;
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
-            SDBRead(data->sdbindex, 0, &ac, sizeof(account_t));
-            SDBRelease(data->sdbindex);
-            dump_account(&ac);
-            
             break;
         }
         case SDB_INDEX_AGENCY:
@@ -290,10 +284,16 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_ROUTE:
         {
             /* Write Route Data to SDB */
-            route_t route = *((route_t*) data->data);
-            SDBAssign(data->sdbindex,  *((long long*)data->sdbID));
-            SDBWrite(data->sdbindex, &route, 0, sizeof(route_t));
+            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
+            
+            route_t r;
+            SDBAssign(data->sdbindex, *((long long*) data->sdbID));
+            SDBRead(data->sdbindex, 0, &r, sizeof(route_t));
+            SDBRelease(data->sdbindex);
+            dump_route(&r);
+            
             break;
         }
         case SDB_INDEX_STATION:
@@ -303,25 +303,6 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
             SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
             SDBRelease(data->sdbindex);
-            break;
-        }
-        case 33: // Temporary
-        {
-            /* Write Station Data to SDB */
-            /* CORE can't receive data over 1000 byte. */
-            /* Agency Data Size is over 1000 byte */
-
-            farePolicy_t policy = *((farePolicy_t*) data->data);
-            dump_policy(&policy);
-            dump_transfer(&(policy.transfer));
-            
-            agency_t ag;
-            /* Write Agency Data to SDB */
-            SDBAssign(SDB_INDEX_AGENCY, *((long long*) data->sdbID));
-            SDBRead(SDB_INDEX_AGENCY, 0, &ag, sizeof(agency_t));
-            ag.policy = policy;
-            SDBWrite(SDB_INDEX_AGENCY, &ag, 0, sizeof(agency_t));
-            SDBRelease(SDB_INDEX_AGENCY);
             break;
         }
     }

@@ -194,11 +194,11 @@ typedef struct
     u_int8 modeType;
     u_int8 routeType;
     u_int8 direction;
-    u_int8 validDirection;
     u_int8 numOfConnectedRoute;
     u_int8 connectedRouteList[SIZE_OF_ROUTE_ID*SIZE_OF_CONNECTED_ROUTE_LIST];
-    u_int16 numOfStation;
+    u_int8 numOfStation;
     u_int8 stationIDList[SIZE_OF_STATION_ID*SIZE_OF_STATION_LIST];
+    u_int8 gpsLocationList[SIZE_OF_STATION_LIST*12];
 } __attribute__ ((packed)) route_t;
 
 
