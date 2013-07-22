@@ -42,7 +42,7 @@ response_t res_data;
 /* This method called when Cloud App start. */
 void CloudAppInit(void)
 {
-    printf("Account=%d\n", sizeof(route_t));
+    printf("Account=%d\n", sizeof(account_t));
     char tmp[16];
     md5(tmp, 16);
     
@@ -86,7 +86,8 @@ void CloudAppInit(void)
     CARegisterTaskHandler(Transit, taskTransit, NULL);
     // SDBEditor
     CARegisterTaskHandler(SDBEditor, taskSDBEditor, NULL);
-    
+    // Test
+    CARegisterTaskHandler(TaskTest, taskTest, NULL);
     
     //Echo
     //CARegisterTaskHandler(Echo, taskEchoHandler, NULL);
@@ -164,17 +165,26 @@ CATaskData *taskEchoWithTimeoutTimeoutHandler(CATaskData *taskData, SDBAssignedI
 /* do not use */
 CATaskData *taskTest(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
 {
-    route_t* route = NULL;
-    sdbtxn_t* data = (sdbtxn_t*)(taskData->data[0]);
+    char* str1 = "hello";
+    char* str2 = "world";
+    short datatype = 0x0103;
+    short len = 5;
     
-    int num = sizeof(route_t);
-    printf("num=%d\n", num);
+    u_int8* data1 = malloc(9);
+    u_int8* data2 = malloc(9);
+    taskData->data[1] = malloc(1024);
     
-    long long l =  *((long long*)data->sdbID);
-    SDBAssign(data->sdbindex, l);
-    SDBRead(data->sdbindex, 0, route, sizeof(route_t));
-    SDBRelease(data->sdbindex);
-    memcpy(taskData->data[0], &route->routeID, 8);
+    taskData->dataCount=2;
+    taskData->length = 18;
+    memcpy(data1, &datatype, 2);
+    memcpy(data1+2, &len, 2);
+    memcpy(data1+4, str1, 5);
+    memcpy(data2, &datatype, 2);
+    memcpy(data2+2, &len, 2);
+    memcpy(data2+4, str2, 5);    
+    
+    memcpy(taskData->data[0], data1, 9);
+    memcpy(taskData->data[1], data2, 9);
     return taskData;
 }
 
@@ -208,24 +218,27 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
     /* Processing Transit Task and Get Response*/
     res_data = app(txn_data, account, agency, route);
     
-    /* Add Header for CORE App Data */
-    makeCloudAppData(taskData->data[0], &res_data, 0, sizeof(response_t), 0x0101);
 
 /* Add Account and Station to response message */
+
 #ifdef DEBUG_MODE
-    taskData->length = sizeof(account_t)*2+sizeof(response_t)+sizeof(station_t)+20;
+    taskData->length = sizeof(response_t)+576+8;
+    //taskData->data[0] = malloc(taskData->length);
+    
     int datalen = taskData->length-4;
     int idx = sizeof(response_t)+4;
     u_int16 formatType = 0x0101;
     taskData->dataCount = 1;
+
+    blockcopy(&formatType, 0, taskData->data[0], idx, 2); idx+=2;
+    blockcopy(&datalen, 0, taskData->data[0], idx, 2); idx +=2;
+    makeCloudAppData(taskData->data[0], &afterAccount, idx, 576, 0x0102);
+    dump_arr("Dist=", taskData->data[0], 0, 100);
     
-    blockcopy(&formatType, 0, taskData->data[0], 0, 2);
-    blockcopy(&datalen, 0, taskData->data[0], 2, 2);
-    makeCloudAppData(taskData->data[0], &beforeAccount, idx, sizeof(account_t), 0x0102); idx += sizeof(account_t)+4;
-    makeCloudAppData(taskData->data[0], &afterAccount, idx, sizeof(account_t), 0x0103); idx += sizeof(account_t)+4;
-    makeCloudAppData(taskData->data[0], &stationForDebug, idx, sizeof(station_t), 0x0104); idx += sizeof(station_t)+4;
     printf("taskData->length=%d\n", taskData->length);
-#endif    
+#endif
+    /* Add Header for CORE App Data */
+    makeCloudAppData(taskData->data[0], &res_data, 0, sizeof(response_t), 0x0101);
     return taskData;
 }
 
@@ -236,8 +249,9 @@ void makeCloudAppData(u_int8* dist, u_int8* src, int index, u_int16 datalength, 
     blockcopy(&formattype, 0, dist, index, 2);
     blockcopy(&datalength, 0, dist, index+2, 2);
     blockcopy(src, 0, dist, index+4, datalength);
+    
 #ifdef DEBUG_CONSOLE
-    printf("DataLength = %d\n", *((u_int16*) (dist+2)));
+    printf("DataLength = %d\n", *((u_int16*) (dist+2+index)));
 #endif
 }
 
@@ -250,9 +264,8 @@ u_int8* sdbid_tmp;
 CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
 {
     sdbtxn_t* data = (sdbtxn_t*)(taskData->data[0]);
-    
     switch(data->sdbindex)
-    {
+    {       
         case SDB_INDEX_ACCOUNT:
         {
             /* Write Account Data to SDB */
@@ -260,16 +273,19 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
             
+            account_t* ac;
+            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBRead(data->sdbindex, 0, ac, sizeof(account_t));
+            SDBRelease(data->sdbindex);
+            dump_account(ac);
             break;
         }
         case SDB_INDEX_AGENCY:
         {
             /* Write Agency Data to SDB */
-            long long l = *((long long*)data->sdbID);
-            SDBAssign(data->sdbindex, l);
+            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
-            SDBRelease(data->sdbindex);
-            break;
+            SDBRelease(data->sdbindex); break;
         }
         case SDB_INDEX_FARE:
         {
@@ -287,13 +303,6 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
             SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
-            
-            route_t r;
-            SDBAssign(data->sdbindex, *((long long*) data->sdbID));
-            SDBRead(data->sdbindex, 0, &r, sizeof(route_t));
-            SDBRelease(data->sdbindex);
-            dump_route(&r);
-            
             break;
         }
         case SDB_INDEX_STATION:

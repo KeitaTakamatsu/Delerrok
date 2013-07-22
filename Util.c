@@ -99,7 +99,7 @@ struct tm makeTimeYYMMDDHHmmSS(u_int8* timestamp)
     int mm = timestamp[4];
     int SS = timestamp[5];
     
-    time.tm_year = YY+100;
+    time.tm_year = YY+2000;
     time.tm_mon = MM-1;
     time.tm_mday = DD;
     time.tm_hour = HH;
@@ -116,7 +116,7 @@ struct tm makeTimeYYYYMMDD(u_int8* timestamp)
     int MM = timestamp[2];
     int DD = timestamp[3];
     
-    time.tm_year = YYYY+100;
+    time.tm_year = YYYY;
     time.tm_mon = MM-1;
     time.tm_mday = DD;
     
@@ -158,9 +158,11 @@ double datetimeCompareShort(struct tm time1, struct tm time2)
 
 void dump_txn(txn_t* txn)
 {
-#ifdef DEBUG_DEBUG_CONSOLE
+#ifdef DEBUG_CONSOLE
     printf("[Transaction]\n");
     printf("AgencyID=");
+    
+    int i;
     for(i = 0; i < 8; i++)
         printf("%02d", txn->agencyID[i]);
     printf("\n");
@@ -325,6 +327,7 @@ void dump_account(account_t* ac)
     printf("CardStatus=%d\n", ac->cardStatus);
     printf("SFP=%d\n", ac->specialFareProgram);
     printf("Balance=%d\n", ac->balance);
+    dump_pass(&ac->passList[0]);
 #endif
 }
 

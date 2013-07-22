@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "CORE2.h"
 #include "COREUtils.h"
 #include "CloudApp.h"
@@ -102,12 +103,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
     currentPass = account->passList[passNumber];
     if(passResult)
     {
-        /*
-            PASS_RESULT_VALID 1
-            PASS_RESULT_UPDATE_TIME 2
-            PASS_RESULT_UPDATE_TRIP 3
-        */        
-        
+        // account->lastHistory = makeHistoryData(agency->agencyID, HISTORY_TYPE_PASS, route, &from, txn->timestamp, PAYMENT_TYPE_PASS);
         response = passProcessFlat(agency->agencyID, passResult, txn, account, &currentPass, route, &from, NO_TRANSFER, 0);
         SDBRelease(SDB_INDEX_STATION);
         
@@ -151,7 +147,7 @@ BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
     
     /* Add more check as necessary */
     
-    return 0;
+    return 1;
 }
 
 
@@ -163,22 +159,37 @@ long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
 {
     int i;
     long long sdbid, var;
-    double comp, max = -9999999;
+    double comp, min = 9999999;
     
     for(i = 0; i < r->numOfStation; i++)
     {
+        /*
         sdbid = *((long long*) (r->stationIDList+i*8));
         SDBAssign(SDB_INDEX_STATION,sdbid);
         SDBRead(SDB_INDEX_STATION, 0, &st, sizeof(station_t));
         SDBRelease(SDB_INDEX_STATION);
-        
         if(max < (comp = gpsCompValue(txn, &st)))
+        */
+        
+        if(min > (comp = gpsCompValue2(txn, r, i*12)))
         {
-            max = comp;
-            var = sdbid;
+            min = comp;
+            var = *((long long*) (r->stationIDList+i*8));
         }
     }
     return var;
+}
+
+long long gpsCompValue2(txn_t* txn, route_t* r, int index)
+{
+    long long txn_north = ((long long) txn->northA)*1000000 + ((long long) txn->northB);
+    long long txn_east = ((long long) txn->eastA)*1000000 + ((long long) txn->eastB);
+    long long st_north = ((long long)*((short*) r->gpsLocationList))*1000000+((long long)*((int*)(r->gpsLocationList+index+2)));
+    long long st_east = ((long long)*((short*) (r->gpsLocationList+6)))*1000000+((long long)*((int*) (r->gpsLocationList+8)));
+    
+    long long a = labs(st_north - txn_north);
+    long long b = labs(st_east - txn_east);
+    return a+b;
 }
 
 long long gpsCompValue(txn_t* txn, station_t* st)
@@ -188,8 +199,8 @@ long long gpsCompValue(txn_t* txn, station_t* st)
     double st_north = ((double)st->northA)+((double)st->northB)/1000000;
     double st_east  = ((double)st->eastA)+((double)st->eastB)/1000000;
     
-    double a = st_north - txn_north;
-    double b = st_east - txn_east;
+    double a = labs(st_north - txn_north);
+    double b = labs(st_east - txn_east);
     return a+b;
 }
 

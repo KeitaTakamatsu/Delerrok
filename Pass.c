@@ -20,7 +20,8 @@ int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, s
 {
     int i, result;
     for(i = 0; i < SIZE_OF_PASS_LIST; i++)
-    {
+    {        
+        dump_pass(&(account->passList[i]));
         if(account->passList[i].passType != 0)
             *hasPass = 1;
         result = passCheck(txn, &(agency->policy), from, to, account, &(account->passList[i]));
@@ -42,12 +43,13 @@ response_t tmp_res;
 */
 response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, u_int8 transfer, u_int8 transferCount)
 {
+    
     switch(passCheckResult)
     {
         case RESULT_VALID:
         {
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_PASS, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             
             break;
         }
@@ -57,14 +59,14 @@ response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, ac
             struct tm now = makeTimeYYMMDDHHmmSS(txn->timestamp);
             timeBasedPassActivate(pass, now, *newtime);
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_PASS, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             break;
         }
         case RESULT_UPDATE_TRIP:
         {
             pass->numOfTripBasedPass--;
             tmp_res = makeResponse(OPEN, FARE_FREE, MESSAGE_CODE_NONE, ERROR_CODE_NONE, account->specialFareProgram, pass->passExpireDate, pass->numOfTripBasedPass, account->balance);
-            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_FLAT_NORMAL, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
+            account->lastHistory = makeHistoryData(agencyID, HISTORY_TYPE_PASS, route, station, txn->timestamp, PAYMENT_TYPE_PASS);
             
             break;
         }
@@ -145,8 +147,8 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     }
     else
     {
-        expire = makeTimeYYYYMMDD(pass->passExpireDate);
-        start = makeTimeYYYYMMDD(pass->passStartDate);
+        expire = makeTimeYYMMDDHHmmSS(pass->passExpireDate);
+        start = makeTimeYYMMDDHHmmSS(pass->passStartDate);
     }
     
     switch(pass->passType)
@@ -166,9 +168,9 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     int _a,_b;
     _a = datetimeCompare(now, start);
     _b = datetimeCompare(now, expire);
-    dump_tm_short(start);
-    dump_tm_short(expire);
-    dump_tm_short(now);
+    
+    
+    
     if(datetimeCompareShort(now, start) < 0)
         return RESULT_INVALID;
     if(datetimeCompareShort(now, expire) > 0)
@@ -230,13 +232,13 @@ int checkValidZone(pass_t* pass, u_int8* zoneID)
     const u_int8 INVALID[] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     
     int i;
-    for(i = 0; i < SIZE_OF_VALID_ZONE_LIST_FOR_PASS; i++)
+    for(i = 0; i < pass->numOfValidZoneID; i++)
     {
-        if(compare(pass->validZoneIDList[i], 0, INVALID, 0, SIZE_OF_ZONE_ID))
+        if(compare(pass->validZoneIDList, 0, INVALID, 0, SIZE_OF_ZONE_ID))
             return 0;
-        if(compare(pass->validZoneIDList[i], 0, VALID, 0, SIZE_OF_ZONE_ID))
+        if(compare(pass->validZoneIDList, 0, VALID, 0, SIZE_OF_ZONE_ID))
             return 1;
-        if(compare(pass->validZoneIDList[i], 0, zoneID, 0, SIZE_OF_ZONE_ID))
+        if(compare(pass->validZoneIDList, 0, zoneID, 0, SIZE_OF_ZONE_ID))
             return 1;
     }
     return 0;

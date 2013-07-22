@@ -114,8 +114,9 @@
 
 
 // History Type
-#define HISTORY_TYPE_FLAT_NORMAL 1
-#define HISTORY_TYPE_FLAT_FAILURE 2
+#define HISTORY_TYPE_PASS 1
+#define HISTORY_TYPE_SV 2
+#define HISTORY_TYPE_CREDIT 2
 
 
 // Payment Type
@@ -186,6 +187,8 @@
 // Station ID Type
 #define STATION_ID_TYPE_DIRECT 1
 #define STATION_ID_TYPE_GPS 2
+
+
 
 //
 #define AGENCY_GROUP_CODE_ANY 0xFF

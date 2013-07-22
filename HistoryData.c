@@ -13,6 +13,7 @@ history_t makeHistoryData(u_int8* agencyID, u_int8 historyType, route_t* route, 
                           u_int8 paymentType)
 {
     hist.historyType = historyType;
+    memcpy(hist.agencyID, agencyID, SIZE_OF_AGENCY_ID);
     memcpy(hist.routeID, route->routeID, SIZE_OF_ROUTE_ID);
     hist.modeType = route->modeType;
     hist.paymentType = paymentType;

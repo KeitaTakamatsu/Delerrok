@@ -64,8 +64,6 @@ u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* acc
         goto NO_TRANSFER_EXIT;
     if(!checkValidPaymentType(t, txn))
         goto NO_TRANSFER_EXIT;
-    //if(checkSameRoute(t, route, td))
-    //   goto TRANSFER_SUCCESS_EXIT;
     if(!checkDirection(t, route, td))
         goto NO_TRANSFER_EXIT;
     if(!checkDesignateStopsOnly(t, station))

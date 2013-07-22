@@ -25,5 +25,6 @@ void init();
 long long makeFlatFareID(u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8 peaktimeCode);
 long long makeStationIDFromGPS2(txn_t* txn, route_t* r);
 long long gpsCompValue(txn_t* txn, station_t* st);
+long long gpsCompValue2(txn_t* txn, route_t* r, int index);
 
 #endif

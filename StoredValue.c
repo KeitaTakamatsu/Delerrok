@@ -42,23 +42,23 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
     }
     else
     {
+        dump_station(station);
+        
         /* Make Fare ID for Flat Fare */
         flatFareID = makeFlatFareID(station->zone.zoneID, account->specialFareProgram, transferResult, 0);
         SDBAssign(SDB_INDEX_FARE, flatFareID);
         SDBRead(SDB_INDEX_FARE, 0, &fare, sizeof(fare_t));
         SDBRelease(SDB_INDEX_FARE);
     }
-        
+    
     /* Update Account */
     if(account->balance >= fare.fareValue)
     {
         account->balance -= fare.fareValue;
         /* Update Transfer Data */
-        if(transferResult)
-            account->transferData = newTransferData;
+        account->transferData = newTransferData;
         /* Update LastHistory */
         account->lastHistory = makeHistoryData(agency->agencyID, 1, route, station, txn->timestamp, 1);
-
         dump_history(&account->lastHistory);
         
         /* Write Account Data to SDB */

@@ -90,11 +90,11 @@ typedef struct
     u_int8 agencyGroupCode[SIZE_OF_AGENCY_GROUP_CODE];
     u_int8 accountStatus;
     u_int8 cardStatus;
-    pass_t passList[SIZE_OF_PASS_LIST];
     u_int8 specialFareProgram;
     int balance;
     history_t lastHistory;
     transferData_t transferData;
+    pass_t passList[SIZE_OF_PASS_LIST];
 } __attribute__ ((packed)) account_t;
 
 
@@ -129,6 +129,7 @@ typedef struct
     u_int8 directionRestriction;
     u_int8 freeFareTransfer;
     u_int8 freeFareTransferCount;
+    u_int8 transferLimitCount;
 } __attribute__ ((packed)) transfer_t;
 
 
