@@ -43,6 +43,8 @@ response_t res_data;
 void CloudAppInit(void)
 {
     printf("Account=%d\n", sizeof(account_t));
+    printf("Pass=%d\n", sizeof(pass_t));
+    printf("History=%d\n", sizeof(history_t));
     char tmp[16];
     md5(tmp, 16);
     
@@ -222,7 +224,7 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
 /* Add Account and Station to response message */
 
 #ifdef DEBUG_MODE
-    taskData->length = sizeof(response_t)+576+8;
+    taskData->length = sizeof(response_t)+578+8;
     //taskData->data[0] = malloc(taskData->length);
     
     int datalen = taskData->length-4;
@@ -230,9 +232,7 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
     u_int16 formatType = 0x0101;
     taskData->dataCount = 1;
 
-    blockcopy(&formatType, 0, taskData->data[0], idx, 2); idx+=2;
-    blockcopy(&datalen, 0, taskData->data[0], idx, 2); idx +=2;
-    makeCloudAppData(taskData->data[0], &afterAccount, idx, 576, 0x0102);
+    makeCloudAppData(taskData->data[0], &afterAccount, idx, 578, 0x0102);
     dump_arr("Dist=", taskData->data[0], 0, 100);
     
     printf("taskData->length=%d\n", taskData->length);

@@ -35,7 +35,7 @@ int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* fare
     }
     
     // DateCompare
-    struct tm now = getNow();
+    struct tm now = makeTimeYYMMDDHHmmSS(timestamp); //getNow();
     struct tm expire = makeTimeYYYYMMDD(expireDate);
     if(datetimeCompareShort(now, expire) > 0)
     {

@@ -30,7 +30,7 @@ void init()
 
 
 response_t res;
-pass_t currentPass;
+pass_t* currentPass;
 station_t from;
 station_t to;
 history_t newhist;
@@ -76,7 +76,6 @@ response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 
 
 
-pass_t currentPass;
 response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
 {
 #ifdef DEBUG_MODE
@@ -100,11 +99,11 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
     
     int hasPass, passNumber;
     int passResult = getPass(txn, agency, account, &from, NULL, &hasPass, &passNumber);
-    currentPass = account->passList[passNumber];
+    currentPass = &account->passList[passNumber];
     if(passResult)
     {
         // account->lastHistory = makeHistoryData(agency->agencyID, HISTORY_TYPE_PASS, route, &from, txn->timestamp, PAYMENT_TYPE_PASS);
-        response = passProcessFlat(agency->agencyID, passResult, txn, account, &currentPass, route, &from, NO_TRANSFER, 0);
+        response = passProcessFlat(agency->agencyID, passResult, txn, account, currentPass, route, &from, NO_TRANSFER, 0);
         SDBRelease(SDB_INDEX_STATION);
         
 #ifdef DEBUG_MODE
@@ -163,14 +162,6 @@ long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
     
     for(i = 0; i < r->numOfStation; i++)
     {
-        /*
-        sdbid = *((long long*) (r->stationIDList+i*8));
-        SDBAssign(SDB_INDEX_STATION,sdbid);
-        SDBRead(SDB_INDEX_STATION, 0, &st, sizeof(station_t));
-        SDBRelease(SDB_INDEX_STATION);
-        if(max < (comp = gpsCompValue(txn, &st)))
-        */
-        
         if(min > (comp = gpsCompValue2(txn, r, i*12)))
         {
             min = comp;

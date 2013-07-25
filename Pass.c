@@ -43,7 +43,6 @@ response_t tmp_res;
 */
 response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, u_int8 transfer, u_int8 transferCount)
 {
-    
     switch(passCheckResult)
     {
         case RESULT_VALID:
@@ -111,87 +110,70 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     
     if(!checkValidZone(pass, zoneID))
         return PASS_RESULT_INVALID;
+    if(!checkAgencyID(pass, agencyID))
+        return PASS_RESULT_INVALID;
     
     
-    /* Update soon. Need Region Code. */
-    //if(!compare(agencyID, 0, pass->validAgencyID, 0, 2))
-    //    return PASS_RESULT_INVALID;
-    /* ------------------------------ */
-    
-    if(pass->passType == PASS_TYPE_TIME)
-    {
-        /*
-          Update Time Based Pass.
-         */
-        
-        if(pass->timeBasedPassRenewalUnits != 0)
-        {
-            newtime = getActivatedTimeBasedPassTime(pass, timestamp);
-            if(newtime == NULL)
-            {
-#ifdef CONSOLE
-                printf("This Pass doesn't have value for renew.\n");
-#endif
-                return PASS_RESULT_INVALID;
-            }
-            else
-            {
-#ifdef CONSOLE
-                printf("RESULT_NEED_UPDATE_TIME\n");
-#endif
-                expire = *newtime;
-                start = now;
-                result = PASS_RESULT_UPDATE_TIME;
-            }
-        }
-    }
-    else
-    {
-        expire = makeTimeYYMMDDHHmmSS(pass->passExpireDate);
-        start = makeTimeYYMMDDHHmmSS(pass->passStartDate);
-    }
-    
-    switch(pass->passType)
-    {
-        case PASS_TYPE_CALENDAR:
-            result = PASS_RESULT_VALID;
-            break;
-        case PASS_TYPE_TIME:
-            result = PASS_RESULT_UPDATE_TIME;
-            break;
-        case PASS_TYPE_TRIP:
-            result = PASS_RESULT_UPDATE_TRIP;
-            break;
-    }
+    expire = makeTimeYYMMDDHHmmSS(pass->passExpireDate);
+    start = makeTimeYYMMDDHHmmSS(pass->passStartDate);
     
     /* Check Datetime */
     int _a,_b;
     _a = datetimeCompare(now, start);
     _b = datetimeCompare(now, expire);
     
-    
-    
-    if(datetimeCompareShort(now, start) < 0)
-        return RESULT_INVALID;
-    if(datetimeCompareShort(now, expire) > 0)
-        return RESULT_INVALID;
-    
-    
-    if(pass->passType == PASS_TYPE_TRIP)
+    if(datetimeCompareShort(now, start) < 0 || datetimeCompareShort(now, expire) > 0)
     {
-        if(pass->numOfTripBasedPass <= 0)
-        {
-            pass->passType = 0;
-            memcpy(pass->passExpireDate, &INVALID_DATE, 4);
-            memcpy(pass->passStartDate, &INVALID_DATE, 4);
+        if(pass->passType != PASS_TYPE_TIME)
             return RESULT_INVALID;
+        
+        if(pass->timeBasedPassRenewalUnits <= 0)
+            return RESULT_INVALID;
+        
+        /* Update Time Based Pass */
+        newtime = getActivatedTimeBasedPassTime(pass, timestamp);
+        if(newtime == NULL)
+        {
+#ifdef CONSOLE
+            printf("This Pass doesn't have value for renew.\n");
+#endif
+            return PASS_RESULT_INVALID;
         }
         else
         {
-            pass->numOfTripBasedPass--;
+#ifdef CONSOLE
+            printf("RESULT_NEED_UPDATE_TIME\n");
+#endif
+            expire = *newtime;
+            start = now;
+            result = PASS_RESULT_UPDATE_TIME;
         }
-    }   
-    
+    }
+    else
+    {
+        switch(pass->passType)
+        {
+            case PASS_TYPE_CALENDAR:
+            case PASS_TYPE_TIME:
+                result = PASS_RESULT_VALID;
+                break;
+            case PASS_TYPE_TRIP:
+                if(pass->numOfTripBasedPass <= 0)
+                {
+                    pass->passType = 0;
+                    memcpy(pass->passExpireDate, &INVALID_DATE, 4);
+                    memcpy(pass->passStartDate, &INVALID_DATE, 4);
+                    return RESULT_INVALID;
+                }
+                else
+                {
+                    pass->numOfTripBasedPass--;
+                }
+                result = PASS_RESULT_UPDATE_TRIP;
+                break;
+        }
+    }
+
     return result;
 }
 
@@ -207,10 +189,13 @@ struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
     switch (pass->timeBasedPassRenewalUnits)
     {
         case TBPASS_ACTIVATE_TYPE_HOUR:
-            activatedPassTime = addTime(time, 0, 0, 0, pass->timeBasedPassRenewalUnits);
+            activatedPassTime = addTime(time, 0, 0, 0, pass->timeBasedPassNumberOfRenewalUnits);
             break;
         case TBPASS_ACTIVATE_TYPE_DAYS:
-            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassRenewalUnits, 0);
+            activatedPassTime = addTime(time, 0, 0, pass->timeBasedPassNumberOfRenewalUnits-1, 0);
+            activatedPassTime.tm_hour = 23;
+            activatedPassTime.tm_min = 59;
+            activatedPassTime.tm_sec = 59;
             break;
     }
     return &activatedPassTime;
@@ -218,9 +203,13 @@ struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
 
 /* Activate Time Based Pass */
 void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
-{    
-    makeYYYYMMDD(now, pass->passStartDate);
-    makeYYYYMMDD(newTime, pass->passExpireDate);
+{
+    makeYYMMDDHHmmSSFromTime(now, pass->passStartDate);
+    makeYYMMDDHHmmSSFromTime(newTime, pass->passExpireDate);
+    dump_arr("timeBasedPassActivate=", pass->passExpireDate, 0,6);
+    
+    // makeYYYYMMDD(now, pass->passStartDate);
+    // makeYYYYMMDD(newTime, pass->passExpireDate);
     pass->timeBasedPassRenewalUnits = 0;
     pass->timeBasedPassNumberOfRenewalUnits = 0;
 }
@@ -229,21 +218,31 @@ void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
 int checkValidZone(pass_t* pass, u_int8* zoneID)
 {
     const u_int8 VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    const u_int8 INVALID[] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     
     int i;
     for(i = 0; i < pass->numOfValidZoneID; i++)
     {
-        if(compare(pass->validZoneIDList, 0, INVALID, 0, SIZE_OF_ZONE_ID))
-            return 0;
-        if(compare(pass->validZoneIDList, 0, VALID, 0, SIZE_OF_ZONE_ID))
+        if(compare(pass->validZoneIDList, i*SIZE_OF_ZONE_ID, VALID, 0, SIZE_OF_ZONE_ID))
             return 1;
-        if(compare(pass->validZoneIDList, 0, zoneID, 0, SIZE_OF_ZONE_ID))
+        if(compare(pass->validZoneIDList, i*SIZE_OF_ZONE_ID, zoneID, 0, SIZE_OF_ZONE_ID))
             return 1;
     }
     return 0;
 }
 
-
+int checkAgencyID(pass_t* pass, u_int8* agencyID)
+{
+    const u_int8 VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    
+    int i;
+    for(i = 0; i < pass->numOfValidAgencies; i++)
+    {
+        if(compare(pass->validAgencyIDList, i*SIZE_OF_AGENCY_ID, VALID, 0, SIZE_OF_ZONE_ID))
+            return 1;
+        if(compare(pass->validAgencyIDList, i*SIZE_OF_AGENCY_ID, agencyID, 0, SIZE_OF_AGENCY_ID))
+            return 1;
+    }
+    return 0;
+}
 
 

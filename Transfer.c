@@ -89,17 +89,10 @@ NO_TRANSFER_EXIT:
 u_int8 OPPOSIT[] = {-1, SOUTH, NORTH, WEST, EAST};
 u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td)
 {
-    if(t->oppositDirectionRestriction)
-    {
-        if(OPPOSIT[route->direction] == td->startDirection)
-            return 0;
-    }
+    /*
+     後で実装
+     */
     
-    if(t->sameDirectionRestriction)
-    {
-        if(route->direction == td->startDirection)
-            return 0;
-    }
     return 1;
 }
 
@@ -191,11 +184,11 @@ u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t*
 /* putting on hold */
 u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn)
 {
-    if(!t->validPaymentType)
+    if(!t->numOfValidCardType)
         return 1;
     
     int i;
-    for(i = 0; i < t->numOfValidPaymentType; i++)
+    for(i = 0; i < t->numOfValidCardType; i++)
     {
         // if(t->validPaymentType[i] == txn->cardType)
     }

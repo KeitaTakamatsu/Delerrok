@@ -35,7 +35,7 @@ typedef struct
     u_int8 messageCode;
     u_int8 errorCode;
     u_int8 sfpCode;
-    u_int8 passExpireDate[SIZE_OF_YYYYMMDD]; // yyyymmdd
+    u_int8 passExpireDate[SIZE_OF_YYMMDDHHMMSS]; // yyyymmdd
     int balance;
     u_int8 numOfTripBasedPass;
 }__attribute__ ((packed)) response_t;
@@ -113,8 +113,6 @@ typedef struct
     u_int8 sameRouteOnly;
     u_int8 maxTimePeriod;
     u_int16 maxMinutes;
-    u_int8 oppositDirectionRestriction;
-    u_int8 sameDirectionRestriction;
     u_int8 designatedStopsOnly;
     u_int8 numOfDesignatedStops;
     u_int8 designatedStops[SIZE_OF_STATION_ID * SIZE_OF_DESIGNATED_STOPS];
@@ -123,10 +121,13 @@ typedef struct
     u_int8 numOfRouteCombination;
     u_int8 routeComtinationFrom[SIZE_OF_ROUTE_ID * SIZE_OF_ROUTE_COMBINATION];
     u_int8 routeComtinationTo[SIZE_OF_ROUTE_ID * SIZE_OF_ROUTE_COMBINATION];
-    u_int8 numOfValidPaymentType;
-    u_int8 validPaymentType[SIZE_OF_VALID_PAYMENT_TYPE_FOR_TRANSFER];
+    u_int8 numOfValidCardType;
+    u_int8 validCardTypes[SIZE_OF_VALID_PAYMENT_TYPE_FOR_TRANSFER];
     u_int8 connectingRouteOnly;
     u_int8 directionRestriction;
+    u_int8 numberOfValidDirectionCombination;
+    u_int8 originalDirectionOfTravel[SIZE_OF_DIRECTION_LIST];
+    u_int8 transferDirectionOfTravel[SIZE_OF_DIRECTION_LIST];
     u_int8 freeFareTransfer;
     u_int8 freeFareTransferCount;
     u_int8 transferLimitCount;

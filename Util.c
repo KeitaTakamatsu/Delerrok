@@ -48,20 +48,38 @@ struct tm getNow(){
 }
 
 struct tm addTime(struct tm src, int addYear, int addMonth, int addDays, int addHour){
+    /*
     struct tm _src = src;
     dump_tm(src);
     _src.tm_year += addYear;
-    _src.tm_mon += addMonth-1;
+    _src.tm_mon += addMonth;
     _src.tm_mday += addDays;
     _src.tm_hour += addHour;
     time_t t1 = mktime(&_src);
     
     struct tm val = *localtime(&t1);
-    val.tm_mon +=1;
+    // val.tm_mon +=1;
     return val;
+    */
+    
+    time_t tCal;
+    struct tm tDay = src;
+    
+    printf("Before %d/%d %d:%d:%d\n", tDay.tm_mon, tDay.tm_mday, tDay.tm_hour, tDay.tm_min, tDay.tm_sec);
+    tDay.tm_year += addYear;
+    tDay.tm_mon += addMonth;
+    tDay.tm_mday += addDays;
+    tDay.tm_hour += addHour;
+    
+    tCal = mktime(&tDay);
+    tDay = *localtime(&tCal);
+    printf("After %d/%d\n", tDay.tm_mon, tDay.tm_mday);
+    
+    return tDay;
 }
 
-struct tm addMin(struct tm src, int min){
+struct tm addMin(struct tm src, int min)
+{
     struct tm _src = src;
     _src.tm_min = min;
     time_t t1 = mktime(&_src);
@@ -72,7 +90,7 @@ struct tm addMin(struct tm src, int min){
 
 void makeYYMMDDHHmmSSFromTime(struct tm timestamp, u_int8* time)
 {
-    time[0] = (u_int8)timestamp.tm_year-100;
+    time[0] = (u_int8)timestamp.tm_year-2000;
     time[1] = (u_int8)timestamp.tm_mon+1;
     time[2] = (u_int8)timestamp.tm_mday;
     time[3] = (u_int8)timestamp.tm_hour;
@@ -84,7 +102,7 @@ void makeYYYYMMDD(struct tm timestamp, u_int8* time)
 {
     time[0] = timestamp.tm_year / 100;
     time[1] = timestamp.tm_year % 100;
-    time[2] = timestamp.tm_mon;
+    time[2] = timestamp.tm_mon+1;
     time[3] = timestamp.tm_mday;
 }
 
@@ -284,8 +302,6 @@ void dump_transfer(transfer_t* tr)
     //printf("NotOnSameRoute=%d\n", tr->not)
     printf("MaxTimePeriod=%d\n", tr->maxTimePeriod);
     printf("MaxMinutes=%d\n", tr->maxMinutes);
-    printf("OppositDirectionRestriction=%d\n", tr->oppositDirectionRestriction);
-    printf("SameDirectionRestriction=%d\n", tr->sameDirectionRestriction);
     printf("DesignatedStopsOnly=%d\n", tr->designatedStopsOnly);
     printf("NumOfDesignatedStops=%d\n", tr->numOfDesignatedStops);
     int i;
@@ -304,10 +320,10 @@ void dump_transfer(transfer_t* tr)
         printf("   RouteCombinationTo%02d=",i);
         dump_arr("", tr->routeComtinationTo, i*8, 8);
     }
-    printf("NumOfValidPaymentType=%d\n", tr->numOfValidPaymentType);
+    printf("NumOfValidCardType=%d\n", tr->numOfValidCardType);
     for(i = 0; i < tr->numOfDesignatedStops; i++)
     {
-        printf("   ValidPaymentType%02d=%d\n", i, tr->validPaymentType[i]);
+        printf("   ValidPaymentType%02d=%d\n", i, tr->validCardTypes[i]);
     }
     printf("ConnectingRouteOnly=%d\n", tr->connectingRouteOnly);
     printf("DirectionRestrictions=%d\n", tr->directionRestriction);
