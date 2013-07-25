@@ -102,11 +102,11 @@ int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* 
 int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zoneID, u_int8* timestamp)
 {
     int result = 0;
-    const u_int8 INVALID_DATE[] = {0x01, 0x01,0x00,0x01};
+    const u_int8 INVALID_DATE[] = {0x00, 0x00,0x00,0x00,0x00,0x00};
     struct tm* newtime;
     struct tm now = makeTimeYYMMDDHHmmSS(timestamp);
-    struct tm expire;
-    struct tm start;
+    struct tm expire = {};
+    struct tm start = {};
     
     if(!checkValidZone(pass, zoneID))
         return PASS_RESULT_INVALID;
@@ -122,7 +122,7 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     _a = datetimeCompare(now, start);
     _b = datetimeCompare(now, expire);
     
-    if(datetimeCompareShort(now, start) < 0 || datetimeCompareShort(now, expire) > 0)
+    if(_a < 0 || _b > 0)
     {
         if(pass->passType != PASS_TYPE_TIME)
             return RESULT_INVALID;
@@ -161,13 +161,9 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
                 if(pass->numOfTripBasedPass <= 0)
                 {
                     pass->passType = 0;
-                    memcpy(pass->passExpireDate, &INVALID_DATE, 4);
-                    memcpy(pass->passStartDate, &INVALID_DATE, 4);
+                    memcpy(pass->passExpireDate, &INVALID_DATE, 6);
+                    memcpy(pass->passStartDate, &INVALID_DATE, 6);
                     return RESULT_INVALID;
-                }
-                else
-                {
-                    pass->numOfTripBasedPass--;
                 }
                 result = PASS_RESULT_UPDATE_TRIP;
                 break;
@@ -177,7 +173,7 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     return result;
 }
 
-struct tm activatedPassTime;
+struct tm activatedPassTime = {};
 
 /* This method return Time that is activated. */
 struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
@@ -206,10 +202,7 @@ void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
 {
     makeYYMMDDHHmmSSFromTime(now, pass->passStartDate);
     makeYYMMDDHHmmSSFromTime(newTime, pass->passExpireDate);
-    dump_arr("timeBasedPassActivate=", pass->passExpireDate, 0,6);
-    
-    // makeYYYYMMDD(now, pass->passStartDate);
-    // makeYYYYMMDD(newTime, pass->passExpireDate);
+    dump_arr("timeBasedPassActivate=", pass->passExpireDate, 0, 6);
     pass->timeBasedPassRenewalUnits = 0;
     pass->timeBasedPassNumberOfRenewalUnits = 0;
 }

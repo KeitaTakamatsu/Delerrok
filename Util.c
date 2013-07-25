@@ -109,7 +109,7 @@ void makeYYYYMMDD(struct tm timestamp, u_int8* time)
 
 struct tm makeTimeYYMMDDHHmmSS(u_int8* timestamp)
 {
-    struct tm time;
+    struct tm time = {};
     int YY = timestamp[0];
     int MM = timestamp[1];
     int DD = timestamp[2];
@@ -129,7 +129,7 @@ struct tm makeTimeYYMMDDHHmmSS(u_int8* timestamp)
 
 struct tm makeTimeYYYYMMDD(u_int8* timestamp)
 {
-    struct tm time;
+    struct tm time = {};
     int YYYY = timestamp[0]*100+timestamp[1];
     int MM = timestamp[2];
     int DD = timestamp[3];
