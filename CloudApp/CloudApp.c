@@ -42,9 +42,7 @@ response_t res_data;
 /* This method called when Cloud App start. */
 void CloudAppInit(void)
 {
-    printf("Account=%d\n", sizeof(account_t));
-    printf("Pass=%d\n", sizeof(pass_t));
-    printf("History=%d\n", sizeof(history_t));
+    printf("AgencySize=%d\n", sizeof(agency_t));
     char tmp[16];
     md5(tmp, 16);
     

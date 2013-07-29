@@ -39,7 +39,8 @@ int compare(u_int8* a, int idx_a, u_int8* b, int idx_b, int len)
     return 1;
 }
 
-struct tm getNow(){
+struct tm getNow()
+{
     time_t now = time(NULL);
     struct tm t = *localtime(&now);
     t.tm_year += 1900;
@@ -47,21 +48,8 @@ struct tm getNow(){
     return t;
 }
 
-struct tm addTime(struct tm src, int addYear, int addMonth, int addDays, int addHour){
-    /*
-    struct tm _src = src;
-    dump_tm(src);
-    _src.tm_year += addYear;
-    _src.tm_mon += addMonth;
-    _src.tm_mday += addDays;
-    _src.tm_hour += addHour;
-    time_t t1 = mktime(&_src);
-    
-    struct tm val = *localtime(&t1);
-    // val.tm_mon +=1;
-    return val;
-    */
-    
+struct tm addTime(struct tm src, int addYear, int addMonth, int addDays, int addHour)
+{
     time_t tCal;
     struct tm tDay = src;
     
@@ -353,8 +341,9 @@ void dump_pass(pass_t* pass)
     int i;
     printf("[Pass]\n");
     printf("PassType=%d\n", pass->passType);
-    printf("StartDate=%d%d/%d/%d\n", pass->passStartDate[0],pass->passStartDate[1],pass->passStartDate[2],pass->passStartDate[3]);
-    printf("ExpireDate=%d%d/%d/%d\n", pass->passExpireDate[0],pass->passExpireDate[1],pass->passExpireDate[2],pass->passExpireDate[3]);
+    printf("StartDate=%d/%d/%d %d:%d:%d\n", pass->passStartDate[0],pass->passStartDate[1],pass->passStartDate[2],pass->passStartDate[3],pass->passStartDate[4],pass->passStartDate[5]);
+    printf("ExpireDate=%d/%d/%d %d:%d:%d\n", pass->passExpireDate[0], pass->passExpireDate[1], pass->passExpireDate[2],
+            pass->passExpireDate[3], pass->passStartDate[4], pass->passStartDate[5]);
     printf("TimeBasedPassAddTimeType=%d\n", pass->timeBasedPassRenewalUnits);
     printf("TimeBasedPassAddTime=%d\n", pass->timeBasedPassNumberOfRenewalUnits);
     printf("NumOfTripBasedPass=%d\n", pass->numOfTripBasedPass);

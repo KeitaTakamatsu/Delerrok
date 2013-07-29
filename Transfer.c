@@ -26,6 +26,8 @@ u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn);
 u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td);
 u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist);
 u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td);
+u_int8 checkTransferLimit(transfer_t* t, transferData_t* td);
+
 
 /*
     This method return Transfer Type.
@@ -84,16 +86,35 @@ NO_TRANSFER_EXIT:
     return NO_TRANSFER;
 }
 
-
-
-u_int8 OPPOSIT[] = {-1, SOUTH, NORTH, WEST, EAST};
-u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td)
+u_int8 checkTransferLimit(transfer_t* t, transferData_t* td)
 {
-    /*
-     後で実装
-     */
+    if(t->transferLimitCount == 0)
+        return 1;
+    
+    if(td->transferCount >= t->transferLimitCount)
+        return 0;
     
     return 1;
+}
+
+
+
+
+u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td)
+{
+    if(!t->directionRestriction)
+        return 1;
+    
+    int i;
+    for(i = 0; i < t->numberOfValidDirectionCombination; i++)
+    {
+        if(td->startDirection != t->originalDirectionOfTravel[i])
+            continue;
+        if(route->direction != t->transferDirectionOfTravel[i])
+            continue;
+        return 1;
+    }    
+    return 0;
 }
 
 u_int8 checkSameRoute(transfer_t* t, route_t* route, transferData_t* td)
@@ -184,16 +205,18 @@ u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t*
 /* putting on hold */
 u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn)
 {
-    if(!t->numOfValidCardType)
+    // 0 = All Card Type is OK.
+    if(!t->numOfValidCardType == 0)
         return 1;
     
     int i;
     for(i = 0; i < t->numOfValidCardType; i++)
     {
-        // if(t->validPaymentType[i] == txn->cardType)
+        if(txn->cardType == t->numOfValidCardType)
+            return 1;
     }
     
-    return 1;
+    return 0;
 }
 
 u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td)
