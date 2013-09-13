@@ -71,6 +71,7 @@ typedef struct
     u_int8 validAgencyIDList[SIZE_OF_AGENCY_ID*SIZE_OF_VALID_AGENCY_LIST_FOR_PASS];
     u_int8 numOfValidZoneID;
     u_int8 validZoneIDList[SIZE_OF_VALID_ZONE_LIST_FOR_PASS*SIZE_OF_ZONE_ID];
+    u_int8 passDiscountType;
 }__attribute__ ((packed)) pass_t;
 
 
@@ -196,6 +197,7 @@ typedef struct
     u_int8 modeType;
     u_int8 routeType;
     u_int8 direction;
+    u_int8 specialDiscount;
     u_int8 numOfConnectedRoute;
     u_int8 connectedRouteList[SIZE_OF_ROUTE_ID*SIZE_OF_CONNECTED_ROUTE_LIST];
     u_int8 numOfStation;
@@ -207,10 +209,12 @@ typedef struct
 
 typedef struct
 {
+    u_int8 agencyID[SIZE_OF_AGENCY_ID];
     u_int8 zoneID[SIZE_OF_ZONE_ID];
     u_int8 sfp;
     u_int8 transferType;
     u_int8 peaktimeCode;
+    u_int8 passDiscount;
     int fareValue;
 }__attribute__ ((packed)) fare_t;
 
@@ -244,7 +248,13 @@ typedef struct
 
 
 
-
+/* For Task Transfer */
+typedef struct
+{
+    u_int16 formatType;
+    u_int16 length;
+    u_int8 data[100];
+} __attribute__ ((packed)) ttfer_t;
 
 
 

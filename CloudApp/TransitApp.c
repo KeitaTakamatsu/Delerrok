@@ -14,12 +14,12 @@
 #include "CloudApp.h"
 #include "FeliCa.h"
 #include "TransitApp.h"
-#include "Account.h"
-#include "ResponseData.h"
-#include "HistoryData.h"
-#include "StoredValue.h"
-#include "Pass.h"
-#include "Util.h"
+#include "../Account.h"
+#include "../ResponseData.h"
+#include "../HistoryData.h"
+#include "../StoredValue.h"
+#include "../Pass.h"
+#include "../Util.h"
 
 farePolicy_t* policy;
 
@@ -34,9 +34,9 @@ pass_t* currentPass;
 station_t from;
 station_t to;
 history_t newhist;
-long long fareID;
-long long stationIDTo;
-long long stationIDFrom;
+u_int64 fareID;
+u_int64 stationIDTo;
+u_int64 stationIDFrom;
 
 
 
@@ -84,7 +84,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
 #endif
     
     response_t response;
-    long long stationID = makeStationIDFromGPS2(txn, route);
+    u_int64 stationID = makeStationIDFromGPS2(txn, route);
     dump_txn(txn);
     
     /* Get Station Data from SDB */
@@ -98,11 +98,10 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
 #endif
     
     int hasPass, passNumber;
-    int passResult = getPass(txn, agency, account, &from, NULL, &hasPass, &passNumber);
+    int passResult = getPass(txn, agency, account, &from, NULL, &hasPass, &passNumber, route->specialDiscount);
     currentPass = &account->passList[passNumber];
-    if(passResult)
+    if(passResult && passResult != PASS_TYPE_DISCOUNT)
     {
-        // account->lastHistory = makeHistoryData(agency->agencyID, HISTORY_TYPE_PASS, route, &from, txn->timestamp, PAYMENT_TYPE_PASS);
         response = passProcessFlat(agency->agencyID, passResult, txn, account, currentPass, route, &from, NO_TRANSFER, 0);
         SDBRelease(SDB_INDEX_STATION);
         
@@ -115,7 +114,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
     }
     
     // Stored Value
-    response = storedValueFlat(txn, account, agency, route, &from);
+    response = storedValueFlat(txn, account, agency, route, &from, passResult == PASS_TYPE_DISCOUNT ? 1 : 0);
     
 #ifdef DEBUG_MODE
     /* Cloud App Debug Mode send Account Data that is influenced by current transaction to Client. */
@@ -154,10 +153,10 @@ BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
 
 station_t st;
 /* I will change this method soon. */
-long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
+u_int64 makeStationIDFromGPS2(txn_t* txn, route_t* r)
 {
     int i;
-    long long sdbid, var;
+    u_int64 sdbid, var;
     double comp, min = 9999999;
     
     for(i = 0; i < r->numOfStation; i++)
@@ -165,13 +164,29 @@ long long makeStationIDFromGPS2(txn_t* txn, route_t* r)
         if(min > (comp = gpsCompValue2(txn, r, i*12)))
         {
             min = comp;
-            var = *((long long*) (r->stationIDList+i*8));
+            //var = *((long long*) (r->stationIDList+i*8));
+            var = toUInt64(r->stationIDList, i*8);
+            dump_arr("",r->stationIDList, i*8, 8);
         }
     }
     return var;
 }
 
-long long gpsCompValue2(txn_t* txn, route_t* r, int index)
+u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index)
+{
+    int64 txn_north = (int64)txn->northA*1000000 + txn->northB;
+    int64 txn_east = (int64)txn->eastA*1000000 + txn->eastB;
+    int64 st_north = (int64)toInt16(r->gpsLocationList, index)*1000000+toInt32(r->gpsLocationList, index+2);
+    int64 st_east = (int64)toInt16(r->gpsLocationList, index+6)*1000000+toInt32(r->gpsLocationList, index+8);
+    int64 a = labs(st_north - txn_north);
+    int64 b = labs(st_east - txn_east);
+    
+    return a+b;
+}
+
+
+/*
+u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index)
 {
     long long txn_north = ((long long) txn->northA)*1000000 + ((long long) txn->northB);
     long long txn_east = ((long long) txn->eastA)*1000000 + ((long long) txn->eastB);
@@ -182,8 +197,9 @@ long long gpsCompValue2(txn_t* txn, route_t* r, int index)
     long long b = labs(st_east - txn_east);
     return a+b;
 }
+*/
 
-long long gpsCompValue(txn_t* txn, station_t* st)
+u_int64 gpsCompValue(txn_t* txn, station_t* st)
 {
     double txn_north = ((double)txn->northA)+((double)txn->northB)/1000000;
     double txn_east = ((double)txn->eastA)+((double)txn->eastB)/1000000;

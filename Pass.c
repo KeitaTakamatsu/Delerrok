@@ -16,15 +16,14 @@
     PASS_RESULT_UPDATE_TRIP 3
         Account have a Trip Based Pass.
  */
-int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, station_t* to, int* hasPass, int* passNumber)
+int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, station_t* to, int* hasPass, int* passNumber, u_int8 spDiscount)
 {
     int i, result;
     for(i = 0; i < SIZE_OF_PASS_LIST; i++)
-    {        
-        dump_pass(&(account->passList[i]));
+    {
         if(account->passList[i].passType != 0)
             *hasPass = 1;
-        result = passCheck(txn, &(agency->policy), from, to, account, &(account->passList[i]));
+        result = passCheck(txn, &(agency->policy), from, to, account, &(account->passList[i]), spDiscount);
         if(result > 0)
         {
             *passNumber = i;
@@ -73,7 +72,7 @@ response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, ac
     return tmp_res;
 }
 
-int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, account_t* account, pass_t* pass)
+int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, account_t* account, pass_t* pass, u_int8 spDiscount)
 {
     int result;
     if(pass->passType == 0)
@@ -81,7 +80,7 @@ int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, 
     switch(policy->fareType)
     {
         case FARE_TYPE_FLAT:
-            result =passCheckFlat(txn, policy, from, account, pass);
+            result =passCheckFlat(txn, policy, from, account, pass, spDiscount);
             break;
         case FARE_TYPE_ZONE:
             break;
@@ -92,27 +91,33 @@ int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, 
 }
 
 
-int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* account, pass_t* pass)
+int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* account, pass_t* pass, u_int8 spDiscount)
 {
-    return checkPassValid(pass, txn->agencyID, txn->routeID, from->zone.zoneID, txn->timestamp);
+    return checkPassValid(pass, txn->agencyID, txn->routeID, from->zone.zoneID, txn->timestamp, spDiscount);
 }
 
 
 
-int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zoneID, u_int8* timestamp)
+int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zoneID, u_int8* timestamp, u_int8 validPassDiscount)
 {
     int result = 0;
+    int spdiscount = 0;
     const u_int8 INVALID_DATE[] = {0x00, 0x00,0x00,0x00,0x00,0x00};
     struct tm* newtime;
     struct tm now = makeTimeYYMMDDHHmmSS(timestamp);
     struct tm expire = {};
     struct tm start = {};
     
-    if(!checkValidZone(pass, zoneID))
-        return PASS_RESULT_INVALID;
     if(!checkAgencyID(pass, agencyID))
         return PASS_RESULT_INVALID;
     
+    if(!checkValidZone(pass, zoneID))
+    {
+        if(validPassDiscount)
+            spdiscount = 1;
+        else
+            return PASS_RESULT_INVALID;
+    }
     
     expire = makeTimeYYMMDDHHmmSS(pass->passExpireDate);
     start = makeTimeYYMMDDHHmmSS(pass->passStartDate);
@@ -151,22 +156,29 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
     }
     else
     {
-        switch(pass->passType)
+        if(spdiscount)
         {
-            case PASS_TYPE_CALENDAR:
-            case PASS_TYPE_TIME:
-                result = PASS_RESULT_VALID;
+            result = PASS_TYPE_DISCOUNT;        
+        }
+        else
+        {
+            switch(pass->passType)
+            {
+                case PASS_TYPE_CALENDAR:
+                case PASS_TYPE_TIME:
+                    result = PASS_RESULT_VALID;
+                    break;
+                case PASS_TYPE_TRIP:
+                    if(pass->numOfTripBasedPass <= 0)
+                    {
+                        pass->passType = 0;
+                        memcpy(pass->passExpireDate, &INVALID_DATE, 6);
+                        memcpy(pass->passStartDate, &INVALID_DATE, 6);
+                        return RESULT_INVALID;
+                    }
+                    result = PASS_RESULT_UPDATE_TRIP;
                 break;
-            case PASS_TYPE_TRIP:
-                if(pass->numOfTripBasedPass <= 0)
-                {
-                    pass->passType = 0;
-                    memcpy(pass->passExpireDate, &INVALID_DATE, 6);
-                    memcpy(pass->passStartDate, &INVALID_DATE, 6);
-                    return RESULT_INVALID;
-                }
-                result = PASS_RESULT_UPDATE_TRIP;
-                break;
+            }
         }
     }
 

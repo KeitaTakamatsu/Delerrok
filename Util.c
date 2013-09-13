@@ -451,8 +451,39 @@ void dump_arr(char* title, u_int8* buf, int index, int length)
 #endif
 }
 
+u_int8 tmpbuf[8];
+u_int16 toUInt16(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 2);
+    return *((u_int16*) tmpbuf);
+}
+u_int32 toUInt32(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 4);
+    return *((u_int32*) tmpbuf);
 
+}
+u_int64 toUInt64(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 8);
+    return *((u_int64*) tmpbuf);
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
+int16 toInt16(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 2);
+    return *((int16*) tmpbuf);
+}
+int32 toInt32(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 4);
+    return *((int32*) tmpbuf);
+}
+int64 toInt64(u_int8* buf, int index)
+{
+    memcpy(tmpbuf, buf+index, 8);
+    return *((int64*) tmpbuf);
+}
 
 
 

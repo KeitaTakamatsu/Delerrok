@@ -8,16 +8,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <netinet/in.h> 
 #include "CORE2.h"
 #include "COREUtils.h"
 #include "CloudApp.h"
 #include "FeliCa.h"
-#include "structures.h"
+#include "../structures.h"
 #include "TransitApp.h"
-#include "StoredValue.h"
-#include "Util.h"
-#include "defines.h"
-#include "udp.h"
+#include "../StoredValue.h"
+#include "../Util.h"
+#include "../defines.h"
+#include "../udp.h"
 
 #define TYPE_CARD 0x0000
 #define TYPE_APP  0x0001
@@ -28,8 +29,10 @@ CATaskData *taskEchoWithTimeoutTimeoutHandler(CATaskData *taskData, SDBAssignedI
 CATaskData *taskIncrementHandler(CATaskData *taskData, SDBAssignedInfo *sdbInfo);
 CATaskData *taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo);
 CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo);
+CATaskData *taskSDBReader(CATaskData* taskData, SDBAssignedInfo* sdbInfo);
 CATaskData *taskTest(CATaskData* taskData, SDBAssignedInfo* sdbInfo);
 CATaskData *taskIncliment(CATaskData* taskData, SDBAssignedInfo* sdbInfo);
+CATaskData *taskTransfer(CATaskData* taskData, SDBAssignedInfo* sdbInfo);
 void makeCloudAppData(u_int8* dist, u_int8* src, int index, u_int16 datalength, u_int16 formattype);
 
 txn_t* txn_data;
@@ -38,11 +41,13 @@ agency_t* agency;
 route_t* route;
 response_t res_data;
 
+SDBAssignInfo taskTransitHandlerAssignInfo;
 
 /* This method called when Cloud App start. */
 void CloudAppInit(void)
 {
-    printf("AgencySize=%d\n", sizeof(agency_t));
+    printf("Account=%d\n", sizeof(account_t));
+    printf("Agency=%d\n", sizeof(agency_t));
     char tmp[16];
     md5(tmp, 16);
     
@@ -82,12 +87,24 @@ void CloudAppInit(void)
     // CARegisterTaskHandler(Transit, taskTransit, &taskTransitHandlerAssignInfo);
     
     
+
+    taskTransitHandlerAssignInfo.numID = 1;
+    taskTransitHandlerAssignInfo.SDBIndex[0] = SDB_INDEX_ACCOUNT;
+    taskTransitHandlerAssignInfo.IDOffset[0] = 5;
+    taskTransitHandlerAssignInfo.IDLength[0] = 8;
+
+    
     ///Register handlers
     CARegisterTaskHandler(Transit, taskTransit, NULL);
     // SDBEditor
     CARegisterTaskHandler(SDBEditor, taskSDBEditor, NULL);
+    // SDBReader
+    CARegisterTaskHandler(SDBReader, taskSDBReader, NULL);
     // Test
-    CARegisterTaskHandler(TaskTest, taskTest, NULL);
+    CARegisterTaskHandler(taskEchoHandler, Echo, NULL);
+    // TaskTransfer
+    CARegisterTaskHandler(TaskTransfer, taskTransfer, NULL);
+    
     
     //Echo
     //CARegisterTaskHandler(Echo, taskEchoHandler, NULL);
@@ -197,20 +214,20 @@ CATaskData* taskTransit(CATaskData* taskData, SDBAssignedInfo *sdbInfo)
     dump_txn(txn_data);
     
     /* Get Agency from SDB*/
-    long long l = *((long long*)txn_data->agencyID);    
+    u_int64 l = toUInt64(txn_data->agencyID, 0);
     SDBAssign(SDB_INDEX_AGENCY, l);
     SDBRead(SDB_INDEX_AGENCY, 0, agency, sizeof(agency_t));
     dump_agency(agency);
     dump_transfer(&(agency->policy.transfer));
     
     /* Get Account from SDB */
-    l = *((long long*)txn_data->cardID);
+    l = toUInt64(txn_data->cardID, 0);
     SDBAssign(SDB_INDEX_ACCOUNT, l);
     SDBRead(SDB_INDEX_ACCOUNT, 0, account, sizeof(account_t));
     dump_account(account);
     
     /* Get Route from SDB */
-    l = *((long long*)txn_data->routeID);
+    l = toUInt64(txn_data->routeID, 0);
     SDBAssign(SDB_INDEX_ROUTE, l);
     SDBRead(SDB_INDEX_ROUTE,  0, route, sizeof(route_t));
     dump_route(route);
@@ -261,35 +278,32 @@ u_int8* sdbid_tmp;
 */
 CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
 {
-    sdbtxn_t* data = (sdbtxn_t*)(taskData->data[0]);
+    sdbtxn_t* data = (sdbtxn_t*)(taskData->data[0]);    
     switch(data->sdbindex)
     {       
         case SDB_INDEX_ACCOUNT:
         {
             /* Write Account Data to SDB */
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBAssign(data->sdbindex, toUInt64(data->sdbID, 0));
+            // SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
-            
-            account_t* ac;
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
-            SDBRead(data->sdbindex, 0, ac, sizeof(account_t));
-            SDBRelease(data->sdbindex);
-            dump_account(ac);
             break;
         }
         case SDB_INDEX_AGENCY:
         {
             /* Write Agency Data to SDB */
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBAssign(data->sdbindex, toUInt64(data->sdbID, 0));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
-            SDBRelease(data->sdbindex); break;
+            SDBRelease(data->sdbindex);            
+            break;
         }
         case SDB_INDEX_FARE:
         {
             /* Write Fare to SDB */
             fare_t fare = *((fare_t*) data->data);
-            long long id = makeFlatFareIDFromFare(&fare);
+            
+            u_int64 id = makeFlatFareIDFromFare(&fare);
             SDBAssign(data->sdbindex,  id);
             SDBWrite(data->sdbindex, &fare, 0, sizeof(fare_t));
             SDBRelease(data->sdbindex);
@@ -298,7 +312,7 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_ROUTE:
         {
             /* Write Route Data to SDB */
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
+            SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
             SDBRelease(data->sdbindex);
             break;
@@ -306,6 +320,18 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_STATION:
         {
             /* Write Station Data to SDB */
+            /*
+            station_t station = *((station_t*) data->data);
+            SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
+            SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
+            SDBRelease(data->sdbindex);
+            */
+            
+            if( *((u_int64*)data->sdbID) == 2042982815900893184)
+            {
+                printf("Hit\n");
+            }
+            
             station_t station = *((station_t*) data->data);
             SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
@@ -317,12 +343,64 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
 }
 
 
+CATaskData *taskSDBReader(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
+{
+    printf("Command: Read SDB!\n");
+    sdbtxn_t* data = (sdbtxn_t*)(taskData->data[0]);
+    
+    
+    short len = toInt16(data->data, 0);
+    printf("Len=%d\n", len);
+    
+    SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
+    SDBRead(data->sdbindex, data->dataIndex, data->data, len);
+    SDBRelease(data->sdbindex);
+
+    data->length = len;
+    taskData->length = len+17;
+    return taskData;
+}
 
 
-
-
-
-
+CATaskData *taskTransfer(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
+{
+    ttfer_t* tf = (ttfer_t*)(taskData->data[0]);
+    
+    switch(tf->formatType)
+    {
+        case 0x0101:
+        {
+            char msg[tf->length+1];
+            int i;
+            for(i = 0; i < tf->length; i++)
+                msg[i] = tf->data[tf->length-i-1];
+            blockcopy(msg, 0, tf->data, 0, tf->length);
+            break;
+        }
+        case 0x0201:
+        {
+            struct sockaddr_in addr;
+            inet_aton(tf->data+2, &addr.sin_addr);
+            addr.sin_port = htons(*((u_int16*) tf->data));
+            CASetTaskTransfer(&addr);
+            break;
+        }
+        case 0x0301:
+            CAClearTaskTransfer();
+            break;
+        case 0x0401:
+        {
+            struct sockaddr_in* addr = CAGetTaskTransfer();
+            char* addrmsg = inet_ntoa(addr->sin_addr);
+            u_int16 port = addr->sin_port;
+            tf->length = strlen(addrmsg)+2;
+            blockcopy(tf->data, 0, &port, 0, 2);
+            blockcopy(tf->data, 2, addrmsg, 0, strlen);            
+            break;
+        }
+    }
+    return taskData;
+}
 
 
 

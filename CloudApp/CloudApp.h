@@ -15,8 +15,9 @@ enum TestCloudAppTaskID {
     Increment       = 0x0002,
     Transit         = 0x0003,
     SDBEditor       = 0x0004,
-    TaskTest        = 0x0005,
-    
+    SDBReader       = 0x0005,
+    TaskTest        = 0x0006,
+    TaskTransfer    = 0x0007
 };
 
 

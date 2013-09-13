@@ -43,4 +43,12 @@ void dump_policy(farePolicy_t* policy);
 void dump_station(station_t* station);
 void dump_transfer(transfer_t* tr);
 void dump_arr(char* title, u_int8* buf, int index, int length);
+u_int16 toUInt16(u_int8* buf, int index);
+u_int32 toUInt32(u_int8* buf, int index);
+u_int64 toUInt64(u_int8* buf, int index);
+int16 toInt16(u_int8* buf, int index);
+int32 toInt32(u_int8* buf, int index);
+int64 toInt64(u_int8* buf, int index);
+
+
 #endif

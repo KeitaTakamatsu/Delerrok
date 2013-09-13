@@ -11,10 +11,9 @@
 #include "HistoryData.h"
 #include "StoredValue.h"
 #include "Account.h"
-#include "CloudApp.h"
-#include "CORE2.h"
-#include "StoredValue.h"
 #include "Util.h"
+#include "CloudApp/CloudApp.h"
+#include "CloudApp/CORE2.h"
 
 
 
@@ -61,7 +60,7 @@ u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* acc
     dump_transferData(&account->transferData);    
     
     if(!t->allowedTransfer)
-        goto NO_TRANSFER_EXIT;
+        return NO_TRANSFER;
     if(!checkMaxTimePeriod(t, timestamp, td))
         goto NO_TRANSFER_EXIT;
     if(!checkValidPaymentType(t, txn))

@@ -36,6 +36,12 @@ extern "C" {
 #define PMM_LENGTH 8
 #define IDI_LENGTH 8
 #define PMI_LENGTH 8
+#define KEYID_LENGTH 4
+#define INDEX_LENGTH 2
+#define AUTHENTICATIONCODE_LENGTH 8
+#define OPTION_LENGTH 2
+  
+#define MAX_FELICA_CMD_SIZE 512
 
   typedef struct {
     uint8_t system[SYSTEM_LENGTH];
@@ -50,6 +56,9 @@ extern "C" {
     uint8_t block_data[MAX_BLOCK_DATA_LENGTH];
     uint8_t key_group_master[KEY_GROUP_MASTER_LENGTH];
     uint8_t key_group_access[KEY_GROUP_ACCESS_LENGTH];
+    uint8_t keyID[KEYID_LENGTH];
+    uint8_t authenticationCode[AUTHENTICATIONCODE_LENGTH];
+    uint8_t option[OPTION_LENGTH];
     uint8_t idmpmm[MAX_RECIEVE_NUMBER][IDMPMM_LENGTH];
     uint8_t idm[IDM_LENGTH];
     uint8_t pmm[PMM_LENGTH];
@@ -60,17 +69,21 @@ extern "C" {
     uint8_t status1;
     uint8_t status2;
     uint8_t result;
-    uint8_t index;
+    uint8_t index[INDEX_LENGTH];
   } CAFeliCaCard;
   
   CATaskData *CAFeliCaPolling(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaRequestService(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaRequestResponse(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaMutualAuthentication(CATaskData *taskData, CAFeliCaCard *card);
+  CATaskData *CAFeliCaCardAuthentication(CATaskData *taskData,CAFeliCaCard *card);
   CATaskData *CAFeliCaReadBlock(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaWriteBlock(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaReadBlockWithoutEncryption(CATaskData *taskData, CAFeliCaCard *card);
   CATaskData *CAFeliCaWriteBlockWithoutEncryption(CATaskData *taskData, CAFeliCaCard *card);
+
+  void CAFeliCaSetTransportKey(uint8_t *transportKey);
+  void CAFeliCaSetCardAuthenticationParams(CAFeliCaCard *card, bool isEncrypted);
   void CAFeliCaRelease(CAFeliCaCard *card);
   void CAFeliCaSetIDmPMm(CAFeliCaCard *card);
 #ifdef __cplusplus

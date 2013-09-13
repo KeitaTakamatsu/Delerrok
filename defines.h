@@ -6,6 +6,8 @@
 //  Copyright (c) 2013年 Keita Takamatsu. All rights reserved.
 //
 
+#include <stdint.h>
+
 #ifndef Delerrok_defines_h
 #define Delerrok_defines_h
 
@@ -82,6 +84,7 @@
 #define PASS_TYPE_TIME 0x01
 #define PASS_TYPE_CALENDAR 0x02
 #define PASS_TYPE_TRIP 0x03
+#define PASS_TYPE_DISCOUNT 0x04
 
 #define PASS_RESULT_INVALID 0
 #define PASS_RESULT_VALID 1
@@ -193,11 +196,14 @@
 //
 #define AGENCY_GROUP_CODE_ANY 0xFF
 
-typedef unsigned long long u_int64;
-typedef unsigned int u_int32;
-typedef unsigned short u_int16;
-typedef unsigned char u_int8;
-typedef unsigned char BOOL;
+typedef uint64_t u_int64;
+typedef uint32_t u_int32;
+typedef uint16_t u_int16;
+typedef int64_t int64;
+typedef int32_t int32;
+typedef int16_t int16;
+typedef uint8_t u_int8;
+typedef uint8_t BOOL;
 
 #define TRUE 1
 #define FALSE 0

@@ -12,7 +12,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/time.h>
-#include <sys/socket.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,7 +44,6 @@ extern "C" {
   } SDBAssignInfo;
   
 #define SDBASSIGNINFO_IDOFFSET_CLIENTID -1
-#define SDBASSIGNINFO_IDOFFSET_CARDIDM  -2
   
   typedef struct {
     uint64_t used;
@@ -80,10 +78,6 @@ extern "C" {
   void SDBGetPartitionInfo(uint8_t SDBIndex, SDBInfo *info);
   void SDBGetCyclicRecordInfo(uint8_t SDBIndex, SDBCyclicRecordInfo *info);
   
-  void CASetTaskTransfer(struct sockaddr *addr);
-  void CAClearTaskTransfer();
-  struct sockaddr *CAGetTaskTransfer();
-  
   
   void CALog(const char *str, ...);
   
@@ -96,7 +90,6 @@ extern "C" {
    * Task
    */
   //CATaskData *handler_routine(CATaskData *taskData, SDBAssignedInfo *sdbInfo);
-  uint8_t GetCCPID();
   
 #ifdef __cplusplus
 }
