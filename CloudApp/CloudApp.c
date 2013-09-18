@@ -97,9 +97,9 @@ void CloudAppInit(void)
     ///Register handlers
     CARegisterTaskHandler(Transit, taskTransit, NULL);
     // SDBEditor
-    CARegisterTaskHandler(SDBEditor, taskSDBEditor, NULL);
+    CARegisterTaskHandler(SDBEditor, taskSDBEditor, &taskTransitHandlerAssignInfo);
     // SDBReader
-    CARegisterTaskHandler(SDBReader, taskSDBReader, NULL);
+    CARegisterTaskHandler(SDBReader, taskSDBReader, &taskTransitHandlerAssignInfo);
     // Test
     CARegisterTaskHandler(taskEchoHandler, Echo, NULL);
     // TaskTransfer
@@ -284,10 +284,10 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         case SDB_INDEX_ACCOUNT:
         {
             /* Write Account Data to SDB */
-            SDBAssign(data->sdbindex, toUInt64(data->sdbID, 0));
+            //SDBAssign(data->sdbindex, toUInt64(data->sdbID, 0));
             // SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, data->data, data->dataIndex, data->length-13);
-            SDBRelease(data->sdbindex);
+            //SDBRelease(data->sdbindex);
             break;
         }
         case SDB_INDEX_AGENCY:
@@ -319,21 +319,9 @@ CATaskData *taskSDBEditor(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
         }
         case SDB_INDEX_STATION:
         {
-            /* Write Station Data to SDB */
-            /*
+            /* Write Station Data to SDB */            
             station_t station = *((station_t*) data->data);
             SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
-            SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
-            SDBRelease(data->sdbindex);
-            */
-            
-            if( *((u_int64*)data->sdbID) == 2042982815900893184)
-            {
-                printf("Hit\n");
-            }
-            
-            station_t station = *((station_t*) data->data);
-            SDBAssign(data->sdbindex, *((long long*)data->sdbID));
             SDBWrite(data->sdbindex, &station, 0, sizeof(station_t));
             SDBRelease(data->sdbindex);
             break;
@@ -352,9 +340,9 @@ CATaskData *taskSDBReader(CATaskData* taskData, SDBAssignedInfo* sdbInfo)
     short len = toInt16(data->data, 0);
     printf("Len=%d\n", len);
     
-    SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
+    //SDBAssign(data->sdbindex,  toUInt64(data->sdbID, 0));
     SDBRead(data->sdbindex, data->dataIndex, data->data, len);
-    SDBRelease(data->sdbindex);
+    //SDBRelease(data->sdbindex);
 
     data->length = len;
     taskData->length = len+17;
