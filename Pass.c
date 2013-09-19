@@ -16,7 +16,7 @@
     PASS_RESULT_UPDATE_TRIP 3
         Account have a Trip Based Pass.
  */
-int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, station_t* to, int* hasPass, int* passNumber, u_int8 spDiscount)
+int getPass(txn_t* txn, agency_t* agency, account_t* account, station_t* from, station_t* to, int* hasPass, int* passNumber, uint8_t spDiscount)
 {
     int i, result;
     for(i = 0; i < SIZE_OF_PASS_LIST; i++)
@@ -40,7 +40,7 @@ response_t tmp_res;
 /*
     This method return Response Data and update Last History.
 */
-response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, u_int8 transfer, u_int8 transferCount)
+response_t passProcessFlat(uint8_t* agencyID, int passCheckResult, txn_t* txn, account_t* account, pass_t* pass, route_t* route ,station_t* station, uint8_t transfer, uint8_t transferCount)
 {
     switch(passCheckResult)
     {
@@ -72,7 +72,7 @@ response_t passProcessFlat(u_int8* agencyID, int passCheckResult, txn_t* txn, ac
     return tmp_res;
 }
 
-int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, account_t* account, pass_t* pass, u_int8 spDiscount)
+int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, account_t* account, pass_t* pass, uint8_t spDiscount)
 {
     int result;
     if(pass->passType == 0)
@@ -91,18 +91,18 @@ int passCheck(txn_t* txn, farePolicy_t* policy, station_t* from, station_t* to, 
 }
 
 
-int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* account, pass_t* pass, u_int8 spDiscount)
+int passCheckFlat(txn_t* txn, farePolicy_t* policy, station_t* from, account_t* account, pass_t* pass, uint8_t spDiscount)
 {
     return checkPassValid(pass, txn->agencyID, txn->routeID, from->zone.zoneID, txn->timestamp, spDiscount);
 }
 
 
 
-int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zoneID, u_int8* timestamp, u_int8 validPassDiscount)
+int checkPassValid(pass_t* pass, uint8_t* agencyID, uint8_t* routeID, uint8_t* zoneID, uint8_t* timestamp, uint8_t validPassDiscount)
 {
     int result = 0;
     int spdiscount = 0;
-    const u_int8 INVALID_DATE[] = {0x00, 0x00,0x00,0x00,0x00,0x00};
+    const uint8_t INVALID_DATE[] = {0x00, 0x00,0x00,0x00,0x00,0x00};
     struct tm* newtime;
     struct tm now = makeTimeYYMMDDHHmmSS(timestamp);
     struct tm expire = {};
@@ -188,7 +188,7 @@ int checkPassValid(pass_t* pass, u_int8* agencyID, u_int8* routeID, u_int8* zone
 struct tm activatedPassTime = {};
 
 /* This method return Time that is activated. */
-struct tm* getActivatedTimeBasedPassTime(pass_t* pass, u_int8* timestamp)
+struct tm* getActivatedTimeBasedPassTime(pass_t* pass, uint8_t* timestamp)
 {
     if(pass->timeBasedPassNumberOfRenewalUnits <= 0)
         return NULL;
@@ -220,9 +220,9 @@ void timeBasedPassActivate(pass_t* pass, struct tm now, struct tm newTime)
 }
 
 
-int checkValidZone(pass_t* pass, u_int8* zoneID)
+int checkValidZone(pass_t* pass, uint8_t* zoneID)
 {
-    const u_int8 VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    const uint8_t VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     
     int i;
     for(i = 0; i < pass->numOfValidZoneID; i++)
@@ -235,9 +235,9 @@ int checkValidZone(pass_t* pass, u_int8* zoneID)
     return 0;
 }
 
-int checkAgencyID(pass_t* pass, u_int8* agencyID)
+int checkAgencyID(pass_t* pass, uint8_t* agencyID)
 {
-    const u_int8 VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    const uint8_t VALID[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     
     int i;
     for(i = 0; i < pass->numOfValidAgencies; i++)

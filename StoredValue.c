@@ -21,7 +21,7 @@
 
 
 /* Process Stored Value for Flat Fare and return Response Data. */
-response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, route_t* route, station_t* station, u_int8 spDiscount)
+response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, route_t* route, station_t* station, uint8_t spDiscount)
 {
     transferData_t newTransferData;
     farePolicy_t* policy = &agency->policy;
@@ -85,8 +85,8 @@ response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, rou
 }
 
 
-u_int8 flatFareID[SIZE_OF_AGENCY_ID+SIZE_OF_ZONE_ID+4];
-u_int64 makeFlatFareID(u_int8* agencyID, u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8 peaktimeCode, u_int8 passDiscount)
+uint8_t flatFareID[SIZE_OF_AGENCY_ID+SIZE_OF_ZONE_ID+4];
+uint64_t makeFlatFareID(uint8_t* agencyID, uint8_t* zoneID, uint8_t sfp, uint8_t transferType, uint8_t peaktimeCode, uint8_t passDiscount)
 {
     int idx = 0;
     blockcopy(agencyID, 0, flatFareID, idx, SIZE_OF_AGENCY_ID); idx += SIZE_OF_AGENCY_ID;
@@ -99,7 +99,7 @@ u_int64 makeFlatFareID(u_int8* agencyID, u_int8* zoneID, u_int8 sfp, u_int8 tran
 }
 
 
-u_int64 makeFlatFareIDFromFare(fare_t* fare)
+uint64_t makeFlatFareIDFromFare(fare_t* fare)
 {
     int idx = 0;
     blockcopy(fare->agencyID, 0, flatFareID, idx, SIZE_OF_AGENCY_ID); idx += SIZE_OF_AGENCY_ID;

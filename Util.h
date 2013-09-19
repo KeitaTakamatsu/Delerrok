@@ -16,13 +16,13 @@
 #include "md5.h"
 
 
-void blockcopy(u_int8* src, int srcidx, u_int8* dst, int dstidx, int len);
+void blockcopy(uint8_t* src, int srcidx, uint8_t* dst, int dstidx, int len);
 long long md5(char* data, int len);
-int compare(u_int8* a, int idx_a, u_int8* b, int idx_b, int len);
-struct tm makeTimeYYYYMMDD(u_int8* timestmap);
-struct tm makeTimeYYMMDDHHmmSS(u_int8* timestmap);
-void makeYYYYMMDD(struct tm timestamp, u_int8* time);
-void makeYYMMDDHHmmSSFromTime(struct tm timestamp, u_int8* time);
+int compare(uint8_t* a, int idx_a, uint8_t* b, int idx_b, int len);
+struct tm makeTimeYYYYMMDD(uint8_t* timestmap);
+struct tm makeTimeYYMMDDHHmmSS(uint8_t* timestmap);
+void makeYYYYMMDD(struct tm timestamp, uint8_t* time);
+void makeYYMMDDHHmmSSFromTime(struct tm timestamp, uint8_t* time);
 double datetimeCompare(struct tm t1, struct tm t2);
 double datetimeCompareShort(struct tm t1, struct tm t2);
 struct tm getNow();
@@ -42,13 +42,13 @@ void dump_responseData(response_t* res);
 void dump_policy(farePolicy_t* policy);
 void dump_station(station_t* station);
 void dump_transfer(transfer_t* tr);
-void dump_arr(char* title, u_int8* buf, int index, int length);
-u_int16 toUInt16(u_int8* buf, int index);
-u_int32 toUInt32(u_int8* buf, int index);
-u_int64 toUInt64(u_int8* buf, int index);
-int16 toInt16(u_int8* buf, int index);
-int32 toInt32(u_int8* buf, int index);
-int64 toInt64(u_int8* buf, int index);
+void dump_arr(char* title, uint8_t* buf, int index, int length);
+uint16_t toUInt16(uint8_t* buf, int index);
+uint32_t toUInt32(uint8_t* buf, int index);
+uint64_t toUInt64(uint8_t* buf, int index);
+int16_t toInt16(uint8_t* buf, int index);
+int32_t toInt32(uint8_t* buf, int index);
+int64_t toInt64(uint8_t* buf, int index);
 
 
 #endif

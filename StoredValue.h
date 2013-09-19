@@ -15,9 +15,9 @@
 
 
 
-u_int64 makeFlatFareID(u_int8* agencyID, u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8 peaktimeCode, u_int8 passDiscount);
-u_int64 makeFlatFareIDFromFare(fare_t* fare);
-response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, route_t* route, station_t* station, u_int8 spDiscount);
+uint64_t makeFlatFareID(uint8_t* agencyID, uint8_t* zoneID, uint8_t sfp, uint8_t transferType, uint8_t peaktimeCode, uint8_t passDiscount);
+uint64_t makeFlatFareIDFromFare(fare_t* fare);
+response_t storedValueFlat(txn_t* txn, account_t* account, agency_t* agency, route_t* route, station_t* station, uint8_t spDiscount);
 
 
 #endif

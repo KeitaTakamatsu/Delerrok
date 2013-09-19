@@ -17,22 +17,22 @@
 
 
 
-u_int8 checkSameRoute(transfer_t* t, route_t* route, transferData_t* td);
-u_int8 checkMaxTimePeriod(transfer_t* t, u_int8* timestamp, transferData_t* td);
-u_int8 checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td);
-u_int8 checkDesignateStopsOnly(transfer_t* t, station_t* station);
-u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn);
-u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td);
-u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist);
-u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td);
-u_int8 checkTransferLimit(transfer_t* t, transferData_t* td);
+uint8_t checkSameRoute(transfer_t* t, route_t* route, transferData_t* td);
+uint8_t checkMaxTimePeriod(transfer_t* t, uint8_t* timestamp, transferData_t* td);
+uint8_t checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td);
+uint8_t checkDesignateStopsOnly(transfer_t* t, station_t* station);
+uint8_t checkValidPaymentType(transfer_t* t, txn_t* txn);
+uint8_t checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td);
+uint8_t checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist);
+uint8_t checkDirection(transfer_t* t, route_t* route, transferData_t* td);
+uint8_t checkTransferLimit(transfer_t* t, transferData_t* td);
 
 
 /*
     This method return Transfer Type.
     Transfer is used to Fare ID.
 */
-u_int8 makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
+uint8_t makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(t->freeFareTransfer)
     {
@@ -51,7 +51,7 @@ u_int8 makeTransferType(transfer_t* t, route_t* route, transferData_t* td)
 }
 
 /* This method return Transfer Type.*/
-u_int8 transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* account, station_t* station, u_int8* timestamp, transferData_t* newTransferData)
+uint8_t transferFlat(txn_t* txn, agency_t* agency, route_t* route, account_t* account, station_t* station, uint8_t* timestamp, transferData_t* newTransferData)
 {
     transfer_t* t = &agency->policy.transfer;
     transferData_t* td = &account->transferData;
@@ -85,7 +85,7 @@ NO_TRANSFER_EXIT:
     return NO_TRANSFER;
 }
 
-u_int8 checkTransferLimit(transfer_t* t, transferData_t* td)
+uint8_t checkTransferLimit(transfer_t* t, transferData_t* td)
 {
     if(t->transferLimitCount == 0)
         return 1;
@@ -99,7 +99,7 @@ u_int8 checkTransferLimit(transfer_t* t, transferData_t* td)
 
 
 
-u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td)
+uint8_t checkDirection(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(!t->directionRestriction)
         return 1;
@@ -116,7 +116,7 @@ u_int8 checkDirection(transfer_t* t, route_t* route, transferData_t* td)
     return 0;
 }
 
-u_int8 checkSameRoute(transfer_t* t, route_t* route, transferData_t* td)
+uint8_t checkSameRoute(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(!t->sameRouteOnly)
         return 0;
@@ -127,7 +127,7 @@ u_int8 checkSameRoute(transfer_t* t, route_t* route, transferData_t* td)
     return 0;
 }
 
-u_int8 checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td)
+uint8_t checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(!t->sameRouteOnly)
         return 1;
@@ -138,7 +138,7 @@ u_int8 checkNotOnSameRoute(transfer_t* t, route_t* route, transferData_t* td)
     return 1;
 }
 
-u_int8 checkMaxTimePeriod(transfer_t* t, u_int8* timestamp, transferData_t* td)
+uint8_t checkMaxTimePeriod(transfer_t* t, uint8_t* timestamp, transferData_t* td)
 {
     if(!t->maxTimePeriod)
         return 1;
@@ -158,7 +158,7 @@ u_int8 checkMaxTimePeriod(transfer_t* t, u_int8* timestamp, transferData_t* td)
     return 1;
 }
 
-u_int8 checkDesignateStopsOnly(transfer_t* t, station_t* station)
+uint8_t checkDesignateStopsOnly(transfer_t* t, station_t* station)
 {
     if(!t->designatedStopsOnly)
         return 1;
@@ -172,7 +172,7 @@ u_int8 checkDesignateStopsOnly(transfer_t* t, station_t* station)
     return 0;
 }
 
-u_int8 checkSameRouteType(transfer_t* t, route_t* route, transferData_t* td)
+uint8_t checkSameRouteType(transfer_t* t, route_t* route, transferData_t* td)
 {
     if(!t->sameRouteType)
         return 1;
@@ -184,7 +184,7 @@ u_int8 checkSameRouteType(transfer_t* t, route_t* route, transferData_t* td)
     return 1;
 }
 
-u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist)
+uint8_t checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t* hist)
 {
     if(!t->specifiedRouteCombinations)
         return 1;
@@ -202,7 +202,7 @@ u_int8 checkSpecifiedRouteCombinations(transfer_t* t, route_t* route, history_t*
 }
 
 /* putting on hold */
-u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn)
+uint8_t checkValidPaymentType(transfer_t* t, txn_t* txn)
 {
     // 0 = All Card Type is OK.
     if(!t->numOfValidCardType == 0)
@@ -218,7 +218,7 @@ u_int8 checkValidPaymentType(transfer_t* t, txn_t* txn)
     return 0;
 }
 
-u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td)
+uint8_t checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* station, transferData_t* td)
 {
     if(!t->connectingRouteOnly)
         return 1;
@@ -248,7 +248,7 @@ u_int8 checkConnectingRouteOnly(transfer_t* t, route_t* route, station_t* statio
 
 
 
-double timeLimitCheck(history_t* hist, transfer_t* transfer, u_int8* timestamp)
+double timeLimitCheck(history_t* hist, transfer_t* transfer, uint8_t* timestamp)
 {
     
     struct tm now = makeTimeYYMMDDHHmmSS(timestamp);

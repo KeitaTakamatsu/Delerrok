@@ -8,7 +8,7 @@
 
 #include "Util.h"
 
-void blockcopy(u_int8* src, int srcidx, u_int8* dst, int dstidx, int len)
+void blockcopy(uint8_t* src, int srcidx, uint8_t* dst, int dstidx, int len)
 {
     int i;
     for(i = 0; i < len; i++)
@@ -28,7 +28,7 @@ long long md5(char* data, int len)
     return *((long long*) digest);
 }
 
-int compare(u_int8* a, int idx_a, u_int8* b, int idx_b, int len)
+int compare(uint8_t* a, int idx_a, uint8_t* b, int idx_b, int len)
 {
     int i;
     for(i = 0; i < len; i++)
@@ -76,17 +76,17 @@ struct tm addMin(struct tm src, int min)
     return val;
 }
 
-void makeYYMMDDHHmmSSFromTime(struct tm timestamp, u_int8* time)
+void makeYYMMDDHHmmSSFromTime(struct tm timestamp, uint8_t* time)
 {
-    time[0] = (u_int8)timestamp.tm_year-2000;
-    time[1] = (u_int8)timestamp.tm_mon+1;
-    time[2] = (u_int8)timestamp.tm_mday;
-    time[3] = (u_int8)timestamp.tm_hour;
-    time[4] = (u_int8)timestamp.tm_min;
-    time[5] = (u_int8)timestamp.tm_sec;
+    time[0] = (uint8_t)timestamp.tm_year-2000;
+    time[1] = (uint8_t)timestamp.tm_mon+1;
+    time[2] = (uint8_t)timestamp.tm_mday;
+    time[3] = (uint8_t)timestamp.tm_hour;
+    time[4] = (uint8_t)timestamp.tm_min;
+    time[5] = (uint8_t)timestamp.tm_sec;
 }
 
-void makeYYYYMMDD(struct tm timestamp, u_int8* time)
+void makeYYYYMMDD(struct tm timestamp, uint8_t* time)
 {
     time[0] = timestamp.tm_year / 100;
     time[1] = timestamp.tm_year % 100;
@@ -95,7 +95,7 @@ void makeYYYYMMDD(struct tm timestamp, u_int8* time)
 }
 
 
-struct tm makeTimeYYMMDDHHmmSS(u_int8* timestamp)
+struct tm makeTimeYYMMDDHHmmSS(uint8_t* timestamp)
 {
     struct tm time = {};
     int YY = timestamp[0];
@@ -115,7 +115,7 @@ struct tm makeTimeYYMMDDHHmmSS(u_int8* timestamp)
     return time;
 }
 
-struct tm makeTimeYYYYMMDD(u_int8* timestamp)
+struct tm makeTimeYYYYMMDD(uint8_t* timestamp)
 {
     struct tm time = {};
     int YYYY = timestamp[0]*100+timestamp[1];
@@ -440,7 +440,7 @@ void dump_station(station_t* station)
 }
 
 
-void dump_arr(char* title, u_int8* buf, int index, int length)
+void dump_arr(char* title, uint8_t* buf, int index, int length)
 {
 #ifdef DEBUG_CONSOLE
     int i;
@@ -451,38 +451,38 @@ void dump_arr(char* title, u_int8* buf, int index, int length)
 #endif
 }
 
-u_int8 tmpbuf[8];
-u_int16 toUInt16(u_int8* buf, int index)
+uint8_t tmpbuf[8];
+uint16_t toUInt16(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 2);
-    return *((u_int16*) tmpbuf);
+    return *((uint16_t*) tmpbuf);
 }
-u_int32 toUInt32(u_int8* buf, int index)
+uint32_t toUInt32(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 4);
-    return *((u_int32*) tmpbuf);
+    return *((uint32_t*) tmpbuf);
 
 }
-u_int64 toUInt64(u_int8* buf, int index)
+uint64_t toUInt64(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 8);
-    return *((u_int64*) tmpbuf);
+    return *((uint64_t*) tmpbuf);
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
-int16 toInt16(u_int8* buf, int index)
+int16_t toInt16(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 2);
-    return *((int16*) tmpbuf);
+    return *((int16_t*) tmpbuf);
 }
-int32 toInt32(u_int8* buf, int index)
+int32_t toInt32(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 4);
-    return *((int32*) tmpbuf);
+    return *((int32_t*) tmpbuf);
 }
-int64 toInt64(u_int8* buf, int index)
+int64_t toInt64(uint8_t* buf, int index)
 {
     memcpy(tmpbuf, buf+index, 8);
-    return *((int64*) tmpbuf);
+    return *((int64_t*) tmpbuf);
 }
 
 

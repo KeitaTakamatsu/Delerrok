@@ -13,7 +13,7 @@
 #include <string.h>
 #include "defines.h"
 #include "structures.h"
-response_t makeResponse(int open, int fare, int messageCode, int errorCode, int sfp, u_int8* passExpireDate, int numOfTripBasedPass, int balance);
+response_t makeResponse(int open, int fare, int messageCode, int errorCode, int sfp, uint8_t* passExpireDate, int numOfTripBasedPass, int balance);
 
 
 #endif

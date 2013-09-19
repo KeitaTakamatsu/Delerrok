@@ -20,11 +20,11 @@ station_t stationForDebug;
 
 response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route);
 response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* route);
-BOOL checkTxnData(txn_t* txn, farePolicy_t* policy);
+uint8_t checkTxnData(txn_t* txn, farePolicy_t* policy);
 void init();
-u_int64 makeFlatFareID(u_int8* agencyID ,u_int8* zoneID, u_int8 sfp, u_int8 transferType, u_int8 peaktimeCode, u_int8 );
-u_int64 makeStationIDFromGPS2(txn_t* txn, route_t* r);
-u_int64 gpsCompValue(txn_t* txn, station_t* st);
-u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index);
+uint64_t makeFlatFareID(uint8_t* agencyID ,uint8_t* zoneID, uint8_t sfp, uint8_t transferType, uint8_t peaktimeCode, uint8_t );
+uint64_t makeStationIDFromGPS2(txn_t* txn, route_t* r);
+uint64_t gpsCompValue(txn_t* txn, station_t* st);
+uint64_t gpsCompValue2(txn_t* txn, route_t* r, int index);
 
 #endif

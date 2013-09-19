@@ -10,9 +10,9 @@
 
 response_t res;
 /* Make Response Data. */
-response_t makeResponse(int open, int fare, int messageCode, int errorCode, int sfp, u_int8* passExpireDate, int numOfTripBasedPass, int balance)
+response_t makeResponse(int open, int fare, int messageCode, int errorCode, int sfp, uint8_t* passExpireDate, int numOfTripBasedPass, int balance)
 {    
-    const u_int8 INVALID_DATE[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    const uint8_t INVALID_DATE[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     res.open = open;
     res.fare = fare;
     res.messageCode = messageCode;

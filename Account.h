@@ -12,7 +12,7 @@
 #include "structures.h"
 #include "defines.h"
 
-int checkAccount(u_int8* agencyGroupCode, account_t* account, farePolicy_t* farePolicy, u_int8* timestamp, u_int8* expireDate);
+int checkAccount(uint8_t* agencyGroupCode, account_t* account, farePolicy_t* farePolicy, uint8_t* timestamp, uint8_t* expireDate);
 int isCardStatusValid(account_t* account, farePolicy_t* policy);
 int isAccountValid(account_t* account, farePolicy_t* policy);
 

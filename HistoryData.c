@@ -9,8 +9,8 @@
 #include "HistoryData.h"
 
 history_t hist;
-history_t makeHistoryData(u_int8* agencyID, u_int8 historyType, route_t* route, station_t* station, u_int8* timestamp,
-                          u_int8 paymentType)
+history_t makeHistoryData(uint8_t* agencyID, uint8_t historyType, route_t* route, station_t* station, uint8_t* timestamp,
+                          uint8_t paymentType)
 {
     hist.historyType = historyType;
     memcpy(hist.agencyID, agencyID, SIZE_OF_AGENCY_ID);

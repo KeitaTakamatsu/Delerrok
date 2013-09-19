@@ -196,17 +196,5 @@
 //
 #define AGENCY_GROUP_CODE_ANY 0xFF
 
-typedef uint64_t u_int64;
-typedef uint32_t u_int32;
-typedef uint16_t u_int16;
-typedef int64_t int64;
-typedef int32_t int32;
-typedef int16_t int16;
-typedef uint8_t u_int8;
-typedef uint8_t BOOL;
-
-#define TRUE 1
-#define FALSE 0
-
 #endif
 

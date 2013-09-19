@@ -34,10 +34,9 @@ pass_t* currentPass;
 station_t from;
 station_t to;
 history_t newhist;
-u_int64 fareID;
-u_int64 stationIDTo;
-u_int64 stationIDFrom;
-
+uint64_t fareID;
+uint64_t stationIDTo;
+uint64_t stationIDFrom;
 
 
 response_t app(txn_t* txn, account_t* account, agency_t* agency, route_t* route)
@@ -84,7 +83,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
 #endif
     
     response_t response;
-    u_int64 stationID = makeStationIDFromGPS2(txn, route);
+    uint64_t stationID = makeStationIDFromGPS2(txn, route);
     dump_txn(txn);
     
     /* Get Station Data from SDB */
@@ -126,7 +125,7 @@ response_t flatfare(txn_t* txn, account_t* account, agency_t* agency, route_t* r
 
 
 
-BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
+uint8_t checkTxnData(txn_t* txn, farePolicy_t* policy)
 {
     int i;
     /* Check Card Type */
@@ -153,10 +152,10 @@ BOOL checkTxnData(txn_t* txn, farePolicy_t* policy)
 
 station_t st;
 /* I will change this method soon. */
-u_int64 makeStationIDFromGPS2(txn_t* txn, route_t* r)
+uint64_t makeStationIDFromGPS2(txn_t* txn, route_t* r)
 {
     int i;
-    u_int64 sdbid, var;
+    uint64_t sdbid, var;
     double comp, min = 9999999;
     
     for(i = 0; i < r->numOfStation; i++)
@@ -172,21 +171,21 @@ u_int64 makeStationIDFromGPS2(txn_t* txn, route_t* r)
     return var;
 }
 
-u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index)
+uint64_t gpsCompValue2(txn_t* txn, route_t* r, int index)
 {
-    int64 txn_north = (int64)txn->northA*1000000 + txn->northB;
-    int64 txn_east = (int64)txn->eastA*1000000 + txn->eastB;
-    int64 st_north = (int64)toInt16(r->gpsLocationList, index)*1000000+toInt32(r->gpsLocationList, index+2);
-    int64 st_east = (int64)toInt16(r->gpsLocationList, index+6)*1000000+toInt32(r->gpsLocationList, index+8);
-    int64 a = labs(st_north - txn_north);
-    int64 b = labs(st_east - txn_east);
+    int64_t txn_north = (int64_t)txn->northA*1000000 + txn->northB;
+    int64_t txn_east = (int64_t)txn->eastA*1000000 + txn->eastB;
+    int64_t st_north = (int64_t)toInt16(r->gpsLocationList, index)*1000000+toInt32(r->gpsLocationList, index+2);
+    int64_t st_east = (int64_t)toInt16(r->gpsLocationList, index+6)*1000000+toInt32(r->gpsLocationList, index+8);
+    int64_t a = labs(st_north - txn_north);
+    int64_t b = labs(st_east - txn_east);
     
     return a+b;
 }
 
 
 /*
-u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index)
+uint64_t gpsCompValue2(txn_t* txn, route_t* r, int index)
 {
     long long txn_north = ((long long) txn->northA)*1000000 + ((long long) txn->northB);
     long long txn_east = ((long long) txn->eastA)*1000000 + ((long long) txn->eastB);
@@ -199,7 +198,7 @@ u_int64 gpsCompValue2(txn_t* txn, route_t* r, int index)
 }
 */
 
-u_int64 gpsCompValue(txn_t* txn, station_t* st)
+uint64_t gpsCompValue(txn_t* txn, station_t* st)
 {
     double txn_north = ((double)txn->northA)+((double)txn->northB)/1000000;
     double txn_east = ((double)txn->eastA)+((double)txn->eastB)/1000000;
