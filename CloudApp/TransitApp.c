@@ -141,7 +141,6 @@ uint8_t checkTxnData(txn_t* txn, farePolicy_t* policy)
             return 0;
         }
     }
-    
     /* Add more check as necessary */
     
     return 1;
